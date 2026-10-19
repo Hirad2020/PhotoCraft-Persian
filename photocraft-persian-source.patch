@@ -1,0 +1,4521 @@
+diff --git a/ATTRIBUTION.md b/ATTRIBUTION.md
+index cbbbe06..c545d2c 100644
+--- a/ATTRIBUTION.md
++++ b/ATTRIBUTION.md
+@@ -13,6 +13,7 @@ next to them.
+ | `crates/codecs/src/codecs/xpm/x11_colors.rs` | X11 `rgb.txt` color-name lookup table (normalized X.Org RGB values) | X.Org Foundation and X11 contributors | <https://cgit.freedesktop.org/xorg/app/rgb/tree/rgb.txt> | MIT (X.Org app/rgb) |
+ | `crates/ui-egui/src/i18n/el.tsv` | Greek UI translations | PhotoCraft contributors | Original translations of PhotoCraft's English labels | MIT OR Apache-2.0, [`LICENSE-translations.txt`](crates/ui-egui/src/i18n/LICENSE-translations.txt) |
+ | `crates/ui-egui/src/i18n/de.tsv` | German UI translations | PhotoCraft contributors | Original translations of PhotoCraft's English labels | MIT OR Apache-2.0, [`LICENSE-translations.txt`](crates/ui-egui/src/i18n/LICENSE-translations.txt) |
++| `crates/ui-egui/src/i18n/fa.tsv` | Persian UI translations | محمد رضا فتحی پور — [pcban.ir](https://pcban.ir), assisted by OpenAI Codex | Public PhotoCraft English labels; Google Translate draft with terminology and placeholder corrections | MIT OR Apache-2.0, [`LICENSE-translations.txt`](crates/ui-egui/src/i18n/LICENSE-translations.txt) |
+ | `crates/ui-egui/src/i18n/es.tsv` | Spanish UI translations | @gorevyoneticisi; AI contributor: OpenAI Codex | Original translations of PhotoCraft's English labels | MIT OR Apache-2.0, [`LICENSE-translations.txt`](crates/ui-egui/src/i18n/LICENSE-translations.txt) |
+ | `crates/ui-egui/src/i18n/it.tsv` | Italian UI translations | PhotoCraft contributors | Original translations of PhotoCraft's English labels | MIT OR Apache-2.0, [`LICENSE-translations.txt`](crates/ui-egui/src/i18n/LICENSE-translations.txt) |
+ | `crates/ui-egui/src/i18n/ko.tsv` | Korean UI translations | PhotoCraft contributors | Original translations of PhotoCraft's English labels | MIT OR Apache-2.0, [`LICENSE-translations.txt`](crates/ui-egui/src/i18n/LICENSE-translations.txt) |
+diff --git a/crates/ui-egui/src/dialogs.rs b/crates/ui-egui/src/dialogs.rs
+index 43b4f3d..6d23de4 100644
+--- a/crates/ui-egui/src/dialogs.rs
++++ b/crates/ui-egui/src/dialogs.rs
+@@ -549,6 +549,9 @@ fn about_tab_body(app: &mut PhotocraftApp, ui: &mut egui::Ui, tab: &str) {
+         _ => {
+             ui.label(tl!("PhotoCraft — an open-source, native image editor written in Rust."));
+             ui.label(crate::i18n::fmt(tl!("Version {version}"), &[("version", &photocraft_engine::build_info::long_version())]));
++            ui.add_space(8.0);
++            ui.label(crate::bidi_text::visual("فارسی‌ساز: محمد رضا فتحی پور"));
++            ui.hyperlink_to("pcban.ir", "https://pcban.ir");
+             ui.add_space(12.0);
+             ui.vertical_centered(|ui| {
+                 crate::links::discord_button(app, ui, 220.0);
+diff --git a/crates/ui-egui/src/direction_tests.rs b/crates/ui-egui/src/direction_tests.rs
+index 4575017..b8f2715 100644
+--- a/crates/ui-egui/src/direction_tests.rs
++++ b/crates/ui-egui/src/direction_tests.rs
+@@ -1,6 +1,6 @@
+ //! Right-to-left shell layout: the direction rules, and where the mirrored chrome lands in a
+-//! running shell. No right-to-left catalog is registered yet, so the shell tests force the
+-//! direction with `direction_scope`.
++//! running shell. Persian follows its registered language; the shell harness can also force
++//! the direction with `direction_scope` without changing its English query labels.
+ 
+ use super::*;
+ use crate::PhotocraftApp;
+@@ -17,9 +17,10 @@ fn right_to_left_scripts_by_language_code() {
+     for code in ["en", "ja", "zh-hans", "pt-br", "ku", "arn", ""] {
+         assert_eq!(i18n::dir_for_code(code), Dir::Ltr, "{code}");
+     }
+-    // No right-to-left catalog is registered yet, so the shell stays as it was.
++    // Registering Persian changes its shell direction while existing LTR catalogs stay LTR.
+     for lang in Lang::all() {
+-        assert_eq!(lang.dir(), Dir::Ltr, "{}", lang.code());
++        let expected = if lang.code() == "fa" { Dir::Rtl } else { Dir::Ltr };
++        assert_eq!(lang.dir(), expected, "{}", lang.code());
+     }
+ }
+ 
+diff --git a/crates/ui-egui/src/i18n/LICENSE-translations.txt b/crates/ui-egui/src/i18n/LICENSE-translations.txt
+index 93a609f..91f00a0 100644
+--- a/crates/ui-egui/src/i18n/LICENSE-translations.txt
++++ b/crates/ui-egui/src/i18n/LICENSE-translations.txt
+@@ -1,8 +1,13 @@
+ PhotoCraft's Korean, German, Spanish, Brazilian Portuguese, Italian, Ukrainian, Dutch, Czech,
+-Turkish, Hungarian and Serbian UI translation catalogs are licensed under MIT OR Apache-2.0,
++Turkish, Hungarian, Persian and Serbian UI translation catalogs are licensed under MIT OR Apache-2.0,
+ at your option.
+ The full license texts are in ../../../../LICENSE-MIT and ../../../../LICENSE-APACHE.
+ 
++Persian localization: محمد رضا فتحی پور — https://pcban.ir
++OpenAI Codex-assisted local contribution, translated from public
++PhotoCraft English labels using a Google Translate draft with terminology and placeholder
++corrections. No proprietary editor's localization resources were used.
++
+ Korean translations: PhotoCraft contributors, original translations of
+ PhotoCraft's English labels; no proprietary translation resources were used.
+ 
+diff --git a/crates/ui-egui/src/i18n/fa.tsv b/crates/ui-egui/src/i18n/fa.tsv
+new file mode 100644
+index 0000000..1e091ad
+--- /dev/null
++++ b/crates/ui-egui/src/i18n/fa.tsv
+@@ -0,0 +1,4276 @@
++# Persian (fa) UI catalog; UTF-8, context<TAB>source<TAB>translation.
++# Persian localization: محمد رضا فتحی پور — https://pcban.ir
++# Translated from public PhotoCraft English strings, with machine-assisted drafts.
++# Common editing terminology reviewed by OpenAI Codex; remaining wording needs native review.
++# Preserve placeholders and escapes. Never reorder the stored Persian text for display.
++	…and {n} more	… و {n} بیشتر
++	(coming soon)	(به زودی)
++	(No neutral color exists for {mode} mode.)	(هیچ رنگ خنثی برای حالت {mode} وجود ندارد.)
++	(none)	(هیچ کدام)
++	(print to the printer)	(چاپ در چاپگر)
++	{added}, {removed} subtracted	{added}، {removed} کم شد
++	{index} of {total}	{index} از {total}
++	{key} to subtract	{key} برای تفریق
++	{key}-click to set the source	{key}-برای تنظیم منبع کلیک کنید
++	{label} is not available: {reason}	{label} در دسترس نیست: {reason}
++	{label} is writing the file and can no longer be cancelled	{label} در حال نوشتن فایل است و دیگر نمی توان آن را لغو کرد
++	{message} ({note})	{message} ({note})
++	{message} (notes: {n}; {warning})	{message} (یادداشت: {n}؛ {warning})
++	{mode} Color · {bits} bit	{mode} رنگ · {bits} بیت
++	{n} action	{n} عملیات
++	{n} commands are not in PhotoCraft.	دستورات {n} در PhotoCraft نیستند.
++	{n} item	{n} مورد
++	{n} items	{n} مورد
++	{n} layer	{n} لایه
++	{n} layer recorded by this comp was deleted. Update the comp, or clear the warning.	{n} لایهٔ ثبت‌شده در این ترکیب حذف شده است. ترکیب را به‌روز کنید یا هشدار را پاک کنید.
++	{n} layers	{n} لایه
++	{n} of {max} sample points	{n} از {max} امتیاز نمونه
++	{n} plane	{n} صفحه
++	{n} preset	{n} پیش‌تنظیم
++	{n} sample	{n} نمونه
++	{n} sample point removed	{n} نقطهٔ نمونه‌برداری حذف شد
++	{n} slice	{n} قطعه
++	{n} step	{n} مرحله
++	{n} step has no PhotoCraft equivalent yet	{n} مرحله هنوز در PhotoCraft معادل ندارد
++	{n} step with no Photoshop equivalent left out	{n} مرحلهٔ بدون معادل در Photoshop کنار گذاشته شد
++	{name} (Photoshop)	{name} (فتوشاپ)
++	{name} can't keep everything in this document	{name} نمی‌تواند همه چیز را در این سند نگه دارد
++	{name} options	گزینه های {name}
++	{name} Properties	ویژگی های {name}
++	{name} was changed by another app after it was opened or saved here.	{name} پس از باز شدن یا ذخیره در اینجا توسط برنامه دیگری تغییر کرد.
++	{path}: the path is not valid Unicode; rename the file and open it again.	{path}: مسیر یونیکد معتبر نیست. نام فایل را تغییر دهید و دوباره آن را باز کنید.
++	{set} (modified)	{set} (اصلاح شده)
++	{shortcut} assigned.	{shortcut} اختصاص داده شد.
++	{shortcut} is already in use by {commands} and will be removed from it when you click OK.	{shortcut} قبلاً توسط {commands} استفاده می‌شود و با کلیک بر روی OK از آن حذف می‌شود.
++	{shortcut} is reserved by the system and can't be assigned.	{shortcut} توسط سیستم رزرو شده است و نمی توان آن را اختصاص داد.
++	{size} (was {old})	{size} ({old} بود)
++	{verb} {mask} {layer}	{verb} {mask} {layer}
++	{w} {unit} x {h} {unit} ({ppi} ppi)	{w} {unit} × {h} {unit} ({ppi} ppi)
++	{w} px x {h} px ({ppi} ppi)	{w} px x {h} px ({ppi} ppi)
++	{warning} (+{n} more brush preset warning)	{warning} (به‌علاوهٔ {n} هشدار دیگر برای پیش‌تنظیم قلم‌مو)
++	{what} with {n} warning	{what} با {n} هشدار
++	{zoom}%	{zoom}%
++	@{login}: {prs} PRs, {commits} commits, +{added} / −{deleted} lines (Δ {delta}), +{binAdded} / −{binDeleted} binary assets, {first} – {last}	@{login}: {prs} PRs، {commits} commits، +{added} / −{deleted} خطوط (Δ {delta})، +{binAdded} / −{binDeleted} دارایی‌های باینری، {first} – {last}
++	% of all commits	% از تمام تعهدات
++	↑↓ navigate   {key} run   esc close	↑↓ پیمایش {key} اجرای esc close
++	↑↓ navigate   ↵ run   esc close	↑↓ پیمایش ↵ اجرای esc close
++	+ Add variable	+ اضافه کردن متغیر
++	✓ Color Indicates Masked Areas	✓ رنگ قسمت های نقاب دار را نشان می دهد
++	✓ Color Indicates Selected Areas	✓ رنگ مناطق انتخاب شده را نشان می دهد
++	0 turns this threshold off; SVG groups nested deeper than 100 levels are always rasterized.	0 این آستانه را خاموش می‌کند. گروه‌های SVG که در عمق بیش از 100 سطح قرار دارند، همیشه شطرنجی می‌شوند.
++	10 fps	10 فریم بر ثانیه
++	100%	100%
++	101 by 101 Average	101 در 101 میانگین
++	11 by 11 Average	11 در 11 میانگین
++	12 Columns	12 ستون
++	125%	125%
++	15 fps	15 فریم بر ثانیه
++	150%	150%
++	16 bit	16 بیت
++	16 Bits/Channel	16 بیت / کانال
++	175%	175%
++	180°	180 درجه
++	2-up Horizontal	2-بالا افقی
++	2-up Vertical	2-بالا عمودی
++	200%	200%
++	24 bits/pixel	24 بیت/پیکسل
++	24 fps	24 فریم در ثانیه
++	25 fps	25 فریم بر ثانیه
++	250%	250%
++	3 by 3 Average	میانگین 3 در 3
++	3 x 3	3×3
++	3-up Horizontal	3-بالا افقی
++	3-up Stacked	سه‌تایی روی هم
++	3-up Vertical	3-بالا عمودی
++	30 fps	30 فریم بر ثانیه
++	30 frames @ 30 fps	30 فریم @ 30 فریم بر ثانیه
++	300%	300%
++	31 by 31 Average	31 در 31 میانگین
++	32 bit (float)	32 بیت (شناور)
++	32 Bits/Channel	32 بیت / کانال
++	32 bits/pixel	32 بیت/پیکسل
++	32-bit Preview Options	گزینه های پیش‌نمایش 32 بیتی
++	32-bit Preview Options…	گزینه های پیش‌نمایش 32 بیتی…
++	3D	سه بعدی
++	3D LUT File	فایل LUT سه بعدی
++	3D…	سه بعدی…
++	4 x 4	4×4
++	4-up	4-بالا
++	5 by 5 Average	5 در 5 میانگین
++	5 Columns, 3 Rows	5 ستون، 3 ردیف
++	5 x 5	5×5
++	50% Gray	50% خاکستری
++	51 by 51 Average	51 در 51 میانگین
++	6-up	6-بالا
++	75%	75%
++	8 bit	8 بیت
++	8 Bits/Channel	8 بیت / کانال
++	8 Columns	8 ستون
++	80%	80%
++	85%	85%
++	90%	90%
++	90° Clockwise	۹۰ درجه ساعت‌گرد
++	90° Counter Clockwise	۹۰ درجه پادساعت‌گرد
++	95%	95%
++	A brush preset with this name already exists	یک قلم‌مو از پیش تنظیم شده با این نام از قبل وجود دارد
++	A save to {name} is still running; try again when it finishes	ذخیره در {name} هنوز در حال اجرا است. وقتی تمام شد دوباره امتحان کنید
++	A:	الف:
++	About	درباره
++	About {app}	درباره {app}
++	About PhotoCraft	دربارهٔ PhotoCraft
++	Absolute	مطلق
++	Absolute Colorimetric	رنگ سنجی مطلق
++	Accented Edges	لبه های تاکیدی
++	Accept and Go to Conflict	بپذیرید و به Conflict بروید
++	Accurate	دقیق
++	ACES	ACES
++	Action	اقدام
++	Action playback failed: {error}	بازپخش اقدام انجام نشد: {error}
++	Action playback stopped	پخش کنش متوقف شد
++	Actions	عملیات
++	Activate Panel	فعال کردن پنل
++	Active	فعال
++	Actual Color	رنگ واقعی
++	Actual Pixels	پیکسل های واقعی
++	Adaptive	تطبیقی
++	Adaptive Wide Angle	زاویه باز تطبیقی
++	Adaptive Wide Angle isn't open	زاویه باز تطبیقی باز نیست
++	Adaptive Wide Angle…	زاویه باز تطبیقی…
++	Add	افزودن
++	Add a layer style	یک سبک لایه اضافه کنید
++	Add a mask  (from the selection; {key} inverts)	افزودن ماسک از انتخاب؛ {key} آن را معکوس می‌کند
++	Add a mask  (from the selection; ⌥ inverts)	اضافه کردن یک ماسک (از انتخاب شده؛ ⌥ معکوس)
++	Add an adjustment	یک تنظیم اضافه کنید
++	Add Anchor Point Tool	ابزار Anchor Point Tool را اضافه کنید
++	Add beauty precomp from the AOVs	Precomp زیبایی را از AOV اضافه کنید
++	Add disk	دیسک را اضافه کنید
++	Add Layer Above to Selection	لایه بالا را به انتخاب اضافه کنید
++	Add Layer Below to Selection	لایه زیر را به انتخاب اضافه کنید
++	Add Layer Mask	افزودن ماسک لایه
++	Add Mask	افزودن ماسک
++	Add Mask to Selection	افزودن ماسک به انتخاب
++	Add New Artboard	آرتبورد جدید اضافه کنید
++	Add Noise	نویز را اضافه کنید
++	Add Noise…	اضافه کردن نویز…
++	Add Open Files	افزودن پرونده‌های باز
++	Add pair	جفت اضافه کنید
++	Add Pins	پین ها را اضافه کنید
++	Add Shortcut	میانبر اضافه کنید
++	Add space after paragraph	بعد از پاراگراف فاصله اضافه کنید
++	Add space before paragraph	قبل از پاراگراف فاصله اضافه کنید
++	Add Stop	Stop را اضافه کنید
++	Add to	اضافه کردن به
++	Add to Dictionary	افزودن به فرهنگ لغت
++	Add to favorites	به علاقه مندی ها اضافه کنید
++	Add to Sample	به نمونه اضافه کنید
++	Add to selection  ({key})	افزودن به انتخاب ({key})
++	Add to selection  (⇧)	افزودن به انتخاب (⇧)
++	Add to Swatches	به Swatches اضافه کنید
++	Add vector mask	افزودن ماسک برداری
++	Add Vector Mask	افزودن ماسک برداری
++	Added swatch {name}	نمونه اضافه شد {name}
++	Additional plugins folder	پوشه افزونه های اضافی
++	Adds grain to the soft edges of the brush tip.	به لبه های نرم نوک قلم‌مو دانه اضافه می‌کند.
++	Adds the current gradient to the Gradients panel	گرادیان فعلی را به پانل Gradients اضافه می‌کند
++	Adjust for Zoom	برای بزرگنمایی تنظیم کنید
++	Adjust Interval For Loops	تنظیم فاصله برای حلقه ها
++	Adjustment	تنظیم
++	Adjustment Layer	لایه تنظیم
++	Adjustment Layers	لایه های تنظیم
++	Adjustment layers have nothing to transform	لایه های تنظیم چیزی برای تبدیل ندارند
++	Adjustment Preview	پیش‌نمایش تنظیم
++	Adjustment Properties	ویژگی های تنظیم
++	Adjustment visible	تنظیم قابل مشاهده است
++	Adjustments	تنظیمات تصویر
++	Adobe	Adobe
++	Adobe Every-line Composer	ترکیب‌کنندهٔ چندخطی Adobe
++	Adobe PDF Presets…	پیش‌تنظیم‌های Adobe PDF…
++	Adobe rgb	Adobe rgb
++	Adobe RGB (1998)	Adobe RGB (1998)
++	Adobe RGB (1998) compatible	Adobe RGB (1998) سازگار است
++	Adobe Single-line Composer	ترکیب‌کنندهٔ تک‌خطی Adobe
++	Adobe-rgb-compat	Adobe-rgb-compat
++	Advanced	پیشرفته
++	Advanced Blending	ترکیب پیشرفته
++	Advanced Controls	کنترل های پیشرفته
++	Adwaita	ادویتا
++	Adwaita (Dark)	Adwaita (تاریک)
++	Adwaita (Light)	Adwaita (نور)
++	Adwaita dark	Adwaita تاریک
++	Adwaita Dark Theme	تم تاریک Adwaita
++	Adwaita Light Theme	تم نور Adwaita
++	After	بعد از
++	After (X)	بعد از (X)
++	Again	دوباره
++	AI Integrations	یکپارچه‌سازی هوش مصنوعی
++	AI Integrations…	یکپارچه‌سازی هوش مصنوعی…
++	Airbrush: keeps depositing paint while the pointer rests.	Airbrush: در حالی که نشانگر در حالت استراحت است، رنگ را به ته نشین می‌کند.
++	Airbrush: keeps painting while the pointer rests.	Airbrush: در حالی که نشانگر در حالت استراحت است به رنگ آمیزی ادامه می دهد.
++	Align	تراز کردن
++	Align {what}	تراز کردن {what}
++	Align and distribute	تراز و توزیع کنید
++	Align and Distribute	تراز و توزیع
++	Align horizontal centers	مراکز افقی را تراز کنید
++	Align left edges	لبه های چپ را تراز کنید
++	Align right edges	لبه های سمت راست را تراز کنید
++	Align with layer	با لایه تراز کنید
++	Aligned	هم‌تراز
++	Alignment	تراز
++	All	همه
++	All Caps	همه سرپوش ها
++	All Layers	همهٔ لایه‌ها
++	All Layers No Adjustments	همه لایه ها بدون تنظیمات
++	All shortcuts reset to PhotoCraft defaults.	همه میانبرها به پیش‌فرض PhotoCraft بازنشانی می‌شوند.
++	All shortcuts reset to Photoshop defaults.	همه میانبرها به حالت پیش فرض فتوشاپ بازنشانی می شوند.
++	All Slices	همه برش ها
++	All User Slices	همه برش های کاربر
++	Allow agent control	اجازه کنترل عامل
++	Allow Continue	اجازه ادامه
++	Allow scripts to connect	اجازه دادن به اسکریپت ها برای اتصال
++	Alpha	آلفا
++	Alt	جایگزین
++	Alt-click to define a source point to clone from	برای تعیین یک نقطه منبع برای شبیه سازی، Alt کلیک کنید
++	Alt-click went to the desktop, which moves windows with Alt-drag. Set its window-move key to Super, or latch Alt in Window › Modifier Keys.	Alt-click به دسکتاپ رفت، که پنجره ها را با Alt-drag حرکت می دهد. کلید حرکت پنجره را روی Super تنظیم کنید، یا Alt را در پنجره › کلیدهای اصلاح کننده قفل کنید.
++	Alternates for Current Selection	جایگزین برای انتخاب فعلی
++	Alternative	جایگزین
++	Altitude	ارتفاع
++	Always	همیشه
++	Always create smart objects when placing	همیشه هنگام قرار دادن اشیاء هوشمند ایجاد کنید
++	Always Show Overlay	همیشه همپوشانی نشان داده شود
++	Always use pressure for opacity	همیشه از فشار برای کنترل تیرگی استفاده شود
++	Always use pressure for size	همیشه برای اندازه از فشار استفاده کنید
++	Ambience	محیط
++	Ambient	محیط
++	Amount	مقدار
++	Amount:	مقدار:
++	Amplitude Max	حداکثر دامنه
++	Amplitude Min	دامنه حداقل
++	Analysis	تجزیه و تحلیل
++	Anamorphic 2:1 (2)	آنامورفیک 2:1 (2)
++	Anchor:	لنگر:
++	Android 1080p	اندروید 1080p
++	Angle	زاویه
++	Angle Gradient	گرادیان زاویه
++	Angle Jitter	گوشه گیر
++	Angle:	زاویه:
++	Angled Strokes	حرکت‌های زاویه‌دار قلم‌مو
++	Animated zoom	زوم متحرک
++	Anisotropic	ناهمسانگرد
++	Answer the unsaved-changes prompt first	ابتدا به درخواست تغییرات ذخیره نشده پاسخ دهید
++	Anti-alias	هموارسازی لبه
++	Anti-Alias	ضد مستعار
++	Anti-aliased	ضد مستعار
++	Anti-aliasing	هموارسازی لبه
++	Anti-aliasing method	روش ضد آلیاسینگ
++	Any	هر
++	Aperture	دیافراگم
++	Appearance	ظاهر
++	Appearance (Layer Style)	ظاهر (سبک لایه)
++	Appearance Mode	حالت ظاهر
++	Appearance Settings…	تنظیمات ظاهر…
++	Apple RGB	اپل RGB
++	Apple Watch 45mm	اپل واچ 45 میلی متری
++	Applies at next launch.	در راه اندازی بعدی اعمال می‌شود.
++	Apply	اعمال
++	Apply {option}: {state}	اعمال {option}: {state}
++	Apply At Canvas Bounds	اعمال در مرزهای بوم
++	Apply auto tone	صدای خودکار را اعمال کنید
++	Apply Data Set	اعمال مجموعه داده
++	Apply Data Set…	اعمال مجموعه داده…
++	Apply Image	اعمال تصویر
++	Apply Image…	اعمال تصویر…
++	Apply Layer Comp	اعمال ترکیب لایه‌ها
++	Apply Layer Mask	اعمال ماسک لایه
++	Apply Mask	اعمال ماسک
++	Apply mask to layer before removing?	قبل از برداشتن ماسک روی لایه اعمال شود؟
++	Apply next selected layer comp	ترکیب لایه انتخابی بعدی را اعمال کنید
++	Apply Per Tip	درخواست هر نکته
++	Apply previous selected layer comp	ترکیب لایه انتخابی قبلی را اعمال کنید
++	Apply the pen's tilt and rotation to the tip shape	شیب و چرخش قلم را به شکل نوک اعمال کنید
++	Apply the removal ({key})	اعمال حذف ({key})
++	Apply to All	برای همه اعمال شود
++	Apply Vanishing Point ({key})	اعمال نقطه ناپدید شدن ({key})
++	Aqua	آبی
++	Arbitrary	خودسرانه
++	Arbitrary…	زاویهٔ دلخواه…
++	Arc	قوس
++	Arc Lower	قوس پایین تر
++	Arc Upper	قوس بالا
++	Arch	قوس
++	Are you sure you want to quit?	آیا مطمئن هستید که می خواهید ترک کنید؟
++	Are you sure?	مطمئنی؟
++	Area	منطقه
++	Around Center	اطراف مرکز
++	Arrange	ترتیب دهید
++	Arrangement	ترتیب
++	Arrows	فلش ها
++	Art & Illustration	هنر و تصویرسازی
++	Art History Brush	قلم‌موی تاریخچهٔ هنری
++	Artboard	بوم طراحی
++	Artboard Background Color	رنگ پس‌زمینهٔ بوم طراحی
++	Artboard from Group	بوم طراحی از گروه
++	Artboard from Group…	بوم طراحی از گروه…
++	Artboard from Layers	بوم طراحی از لایه‌ها
++	Artboard from Layers…	بوم طراحی از لایه‌ها…
++	Artboard Guides	راهنماهای بوم طراحی
++	Artboard Tool	ابزار بوم طراحی
++	Artboard…	بوم طراحی…
++	Artboards	بوم‌های طراحی
++	Artboards to Files	بوم‌های طراحی به پرونده‌ها
++	Artboards to Files…	بوم‌های طراحی به پرونده‌ها…
++	Artboards to PDF	بوم‌های طراحی به PDF
++	Artboards to PDF…	بوم‌های طراحی به PDF…
++	ArtCraft	هنر هنر
++	ArtCraft Website	وب سایت ArtCraft
++	Artist	هنرمند
++	Artistic	هنری
++	Ask	بپرسید
++	Ask before saving layered tiff	قبل از ذخیره tiff لایه ای بپرسید
++	Ask Before Saving Saved Embedded	قبل از ذخیره ذخیره شده جاسازی شده سؤال کنید
++	Ask On Mismatch	در مورد عدم تطابق بپرسید
++	Ask On Missing	در مورد گمشده بپرسید
++	Ask On Paste	پرسش هنگام چسباندن
++	Ask When Pasting	هنگام چسباندن بپرسید
++	Aspect Ratio	نسبت تصویر
++	Assign Profile	اختصاص دادن نمایه
++	Assign Profile…	اختصاص پروفایل…
++	Assign working space	فضای کاری را اختصاص دهید
++	At	در
++	Attempt to Automatically Align Source Images	تلاش برای تراز خودکار تصاویر منبع
++	Audio	صوتی
++	Author	نویسنده
++	Author Title	عنوان نویسنده
++	Author:	نویسنده:
++	auto	خودکار
++	Auto	خودکار
++	Auto Add/Delete	افزودن/حذف خودکار
++	Auto Adjust Opacity	تنظیم خودکار تیرگی
++	Auto Center Preview	پیش‌نمایش مرکز خودکار
++	Auto Clean Brush	برس تمیز کردن خودکار
++	Auto collapse icon panels	جمع کردن خودکار پانل‌های نماد
++	Auto Color	رنگ خودکار
++	Auto Contrast	کنتراست خودکار
++	Auto Erase	پاک کردن خودکار
++	Auto Hide	پنهان کردن خودکار
++	Auto Hide Notifications	پنهان کردن خودکار اعلان ها
++	Auto Scale	مقیاس خودکار
++	Auto show hidden panels	نمایش خودکار پانل های مخفی
++	Auto show home screen	نمایش خودکار صفحه اصلی
++	Auto Show Overlay	نمایش خودکار همپوشانی
++	Auto Tone	تنظیم خودکار تون
++	Auto-Align Layers	تراز خودکار لایه ها
++	Auto-Align Layers…	تراز خودکار لایه‌ها…
++	Auto-Blend Layers	ترکیب خودکار لایه ها
++	Auto-Blend Layers…	ترکیب خودکار لایه‌ها…
++	Auto-Hide	پنهان کردن خودکار
++	Auto-Leading	پیشرو خودکار
++	Auto-leading %	% پیشرو خودکار
++	Auto-Select:	انتخاب خودکار:
++	Automate	پردازش خودکار
++	Automatic	خودکار
++	Automatic (recommended)	خودکار (توصیه می‌شود)
++	Automatic uses GPU acceleration when available and falls back to CPU rendering on errors.	خودکار در صورت موجود بودن از شتاب GPU استفاده می‌کند و در صورت بروز خطا به رندر CPU بازمی گردد.
++	Automatically Create First Snapshot	ایجاد خودکار اولین عکس فوری
++	Automatically Create New Snapshot When Saving	هنگام ذخیره به صورت خودکار عکس فوری جدید ایجاد کنید
++	Automatically level near-horizontal line segments	تراز خودکار بخش های خط نزدیک به افقی
++	Automatically straighten and level	صاف کردن و تراز کردن خودکار
++	Automatically straighten near-vertical line segments	به طور خودکار بخش های خط نزدیک به عمودی را صاف کنید
++	Autosave	ذخیره خودکار
++	Autosave failed: {error}	ذخیره خودکار انجام نشد: {error}
++	Autosave minutes	ذخیره خودکار دقیقه
++	Average	میانگین
++	Avoid Widows/Orphans	از زنان بیوه/یتیمان دوری کنید
++	Back	بازگشت
++	Backend: {backend} ({type})	موتور: {backend} ({type})
++	Background	پس‌زمینه
++	Background (Default)	پس‌زمینه (پیش‌فرض)
++	Background Color	رنگ پس زمینه
++	Background Contents	مطالب پس زمینه
++	Background Eraser	پاک کن پس زمینه
++	Background Eraser Tool	ابزار پاک کن پس زمینه
++	Background from Layer	پس زمینه از لایه
++	Background From Layer	پس زمینه از لایه
++	Background Level	سطح پس زمینه
++	Balance	تعادل
++	Bamboo	بامبو
++	Bas Relief	نقش‌برجستهٔ کم‌عمق
++	Base Tree Type	نوع درخت پایه
++	Based On	بر اساس
++	Baseline	خط مبنا
++	Baseline shift	تغییر خط پایه
++	Baseline Shift	تغییر خط مبنا
++	Basic	اساسی
++	Basic Latin	لاتین پایه
++	Batch	دسته ای
++	Batch…	پردازش دسته‌ای…
++	Beep when done	وقتی تمام شد بوق بزنید
++	Before	قبل از
++	Before (Y)	قبل از (Y)
++	Begin recording	شروع به ضبط کنید
++	Bend	خم شدن
++	Bend:	خم شدن:
++	Berries	توت ها
++	Best	بهترین
++	Bevel	پخ
++	Bevel & Emboss	پخ و برجستگی
++	Bevel & Emboss…	پخ و برجستگی…
++	Bicubic	دو مکعبی
++	Bicubic (smooth gradients)	دو مکعبی (شیب صاف)
++	Bicubic automatic	دو مکعبی اتوماتیک
++	Bicubic sharper	تیزتر دو مکعبی
++	Bicubic Sharper (reduction)	شارپر دو مکعبی (کاهش)
++	Bicubic smoother	صاف کننده دو مکعبی
++	Bicubic Smoother (enlargement)	صاف کننده دو مکعبی (بزرگ شدن)
++	Bilinear	دو خطی
++	Binary assets added	دارایی های باینری اضافه شد
++	Binary assets removed	دارایی های باینری حذف شد
++	Bit depth	عمق بیت
++	Bitmap	بیت‌مپ
++	Bitmap…	بیت‌مپ…
++	Black	مشکی
++	Black & White	سیاه و سفید
++	Black & White…	سیاه‌وسفید…
++	Black Clip	گیره مشکی
++	Black Intensity	شدت سیاه
++	Black Matte	مات مشکی
++	Black Point Compensation	جبران نقطه سیاه
++	Black, White	سیاه، سفید
++	Blacks	سیاه‌ها
++	Blade Curvature	انحنای تیغه
++	BLANK DOCUMENT PRESETS ({n})	پیش تنظیم های سند خالی ({n})
++	Blast	انفجار
++	Bleach Bypass	بای پس سفید کننده
++	Blend	مخلوط کنید
++	Blend Clipped Layers as Group	لایه های بریده شده را به صورت گروهی ترکیب کنید
++	Blend If	ترکیب شرطی
++	Blend If:	ترکیب شرطی:
++	Blend Interior Effects as Group	جلوه های داخلی را به صورت گروهی ترکیب کنید
++	Blend Mode	حالت ترکیب
++	Blend RGB Colors Using Gamma 1.0	رنگ های RGB را با استفاده از گاما 1.0 ترکیب کنید
++	Blend Text Gamma	گامای متن را ترکیب کنید
++	Blending	مخلوط کردن
++	Blending Mode	حالت ترکیبی
++	Blending Options	گزینه‌های ترکیب
++	Blending Options…	گزینه‌های ترکیب…
++	Bloat	نفخ
++	Block	مسدود کردن
++	Blocks	بلوک ها
++	blue	آبی
++	Blue	آبی
++	Blue Yellow	آبی زرد
++	Blue, Red, Yellow	آبی، قرمز، زرد
++	Blues	بلوز
++	Blur	تاری
++	Blur Angle	زاویهٔ تاری
++	Blur Gallery	گالری تاری
++	Blur More	تاری بیشتر
++	Blur Tool	ابزار تار کردن
++	Bold	پررنگ
++	Bold Italic	مورب پررنگ
++	Border	مرز
++	Border Thickness	ضخامت مرز
++	Border…	حاشیه…
++	Both	هر دو
++	Both Axes	هر دو محور
++	Bottom	پایین
++	Bottom Edges	لبه های پایین
++	Bottom Left	پایین چپ
++	Bottom Right	پایین راست
++	Bottom:	پایین:
++	Box Blur	محو کردن جعبه
++	Box Blur…	محو کردن جعبه…
++	Bpc	Bpc
++	Branches Color	رنگ شاخه ها
++	Branches Height	ارتفاع شاخه ها
++	Branches Thickness	ضخامت شاخه ها
++	Breeze dark	نسیم تاریک
++	Breeze Dark	نسیم تاریک
++	Breeze Dark Theme	تم تاریک نسیم
++	Breeze light	نور نسیم
++	Breeze Light	نور نسیم
++	Breeze Light Theme	تم نور نسیم
++	Brick	آجر
++	Brightness	روشنایی
++	Brightness Jitter	لرزش روشنایی
++	Brightness/Contrast	روشنایی / کنتراست
++	Brightness/Contrast…	روشنایی و کنتراست…
++	Bring Forward	به جلو بیاورید
++	Bring the selected pin forward	پین انتخاب شده را جلو بیاورید
++	Bring to Front	به جلو بیاورید
++	Bristle Detail	جزئیات بریستل
++	Browse	مرور کنید
++	Browse…	مرور…
++	Browser storage is unavailable; brushes are session-only. Keep this tab open to retain them.	ذخیره سازی مرورگر در دسترس نیست. برس ها فقط جلسه ای هستند. این برگه را باز نگه دارید تا آنها را حفظ کنید.
++	Brush	برس بزنید
++	Brush Detail	جزئیات قلم‌مو
++	Brush name	نام برس
++	Brush Name	نام قلم‌مو
++	Brush picker	برس جمع کن
++	Brush Pose	حالت قلم‌مو
++	Brush preset changes are not saved: {error}	تغییرات از پیش تعیین شده قلم‌مو ذخیره نمی شوند: {error}
++	Brush Preset Options	گزینه‌های پیش‌تنظیم قلم‌مو
++	Brush Preset picker	انتخاب پیش‌تنظیم قلم‌مو
++	Brush Preview	پیش‌نمایش قلم‌مو
++	Brush preview color	رنگ پیش‌نمایش قلم‌مو
++	Brush Projection	برس پروجکشن
++	Brush Reconstruct Options	گزینه های بازسازی قلم‌مو
++	Brush Settings	تنظیمات قلم‌مو
++	Brush Settings…  (F5): every option of this brush	تنظیمات قلم‌مو… (F5): تمام گزینه‌های این قلم‌مو
++	Brush Size	اندازه برس
++	Brush Stroke	حرکت قلم‌مو
++	Brush Strokes	حرکت‌های قلم‌مو
++	Brush Tip	نوک قلم‌مو
++	Brush Tip Shape	شکل نوک قلم‌مو
++	Brush Tool	ابزار قلم‌مو
++	Brush Tool Options	گزینه های ابزار قلم‌مو
++	Brush Type	نوع قلم‌مو
++	brushes	برس ها
++	Brushes	قلم‌موها
++	Build-up	ساخت
++	Bulge	برآمدگی
++	Bundle Arrow-Key Nudges	دسته کلیدهای پیکان
++	Burlap	چاقو
++	Burn	تیره‌سازی
++	Burn Tool	ابزار تیره‌سازی
++	Butt / Flat	لب به لب / تخت
++	Button Mode	حالت دکمه
++	Button Mode On	حالت دکمه روشن
++	Byline	توسط خط
++	Byline Title	عنوان خطی
++	Cache Level:	سطح کش:
++	Cache levels	سطوح کش
++	Cache tile size	اندازه کاشی کش
++	Calculations	محاسبات
++	Calculations…	محاسبات…
++	Camera Calibration	کالیبراسیون دوربین
++	Camera Data	داده های دوربین
++	Camera Make	دوربین ساخت
++	Camera Model	مدل دوربین
++	Camera Raw	Camera Raw
++	Camera Raw ({name})	Camera Raw ({name})
++	Camera Raw Defaults	پیش‌فرض‌های Camera Raw
++	Camera Raw Filter	فیلتر خام دوربین
++	Camera Raw Filter ({layer})	فیلتر خام دوربین ({layer})
++	Camera Raw Filter…	فیلتر خام دوربین …
++	Camera Raw isn't open	Camera Raw باز نیست
++	Camera Raw…	Camera Raw…
++	Cancel	انصراف
++	Cancel (Esc)	لغو (Esc)
++	Cancel any current edits (Esc)	لغو هرگونه ویرایش فعلی (Esc)
++	Cancel current crop operation  (Esc)	لغو عملیات برش فعلی (Esc)
++	Cancel opening	لغو افتتاح
++	Cancel transform	لغو تبدیل
++	Cancel transform (Esc)	لغو تبدیل (Esc)
++	Cancel warp (Esc)	لغو چرخش (Esc)
++	Cancelled {label}	لغو شد {label}
++	Cancelled opening {name}	افتتاحیه {name} لغو شد
++	Candle Light	نور شمع
++	Canvas	بوم
++	Canvas border	حاشیه بوم
++	Canvas color	رنگ بوم
++	Canvas custom color	رنگ سفارشی بوم
++	Canvas extension color:	رنگ پسوند بوم:
++	Canvas Guides	راهنمای بوم
++	Canvas rotation	چرخش بوم
++	Canvas Size	اندازه بوم
++	Canvas Size…	اندازهٔ بوم…
++	Caps	کلاه
++	Caption	عنوان
++	Caption Credits	عنوان اعتبار
++	Capture	گرفتن
++	Capture Brush Size in Preset	اندازه قلم‌مو را در حالت از پیش تعیین شده ضبط کنید
++	Capture Comp	ثبت ترکیب لایه‌ها
++	Capture the visibility, position and style of every layer with + below, then switch between versions.	نمایان بودن، موقعیت و استایل هر لایه را با + زیر ضبط کنید، سپس بین نسخه ها جابجا شوید.
++	Cascade	آبشار
++	Case Sensitive	حساس به حروف کوچک و بزرگ
++	Catch-up on Stroke End	تکمیل حرکت در پایان رسم
++	Category	دسته بندی
++	Ccw	پادساعت‌گرد
++	Cell Size	اندازه سلول
++	Center	مرکز
++	Center Columns	وسط‌چین کردن ستون‌ها
++	Center Crop Marks	علامت‌های برش مرکزی
++	Center Rows	وسط‌چین کردن ردیف‌ها
++	Center text	متن وسط
++	Center X	مرکز X
++	Center Y	مرکز Y
++	Centimeters	سانتی متر
++	Centre the gradient (offset 0, 0)	شیب را در مرکز قرار دهید (افست 0، 0)
++	Chalk & Charcoal	گچ و زغال سنگ
++	Chalk Area	منطقه گچ
++	Change	تغییر دهید
++	Change All	تغییر همه
++	Change Find	Find را تغییر دهید
++	Change Panel Group	تغییر گروه پنل
++	Change Panel Layout	تغییر طرح بندی پنل
++	Change Screen Mode  (F)	تغییر حالت صفحه نمایش (F)
++	Change To:	تغییر به:
++	Change…	تغییر…
++	Changes have not been saved.	تغییرات ذخیره نشده است.
++	Changes Saved	تغییرات ذخیره شد
++	Changes undone.	تغییرات لغو شد.
++	Channel	کانال
++	Channel Color	رنگ کانال
++	Channel Mixer	ترکیب‌کنندهٔ کانال
++	Channel Mixer…	ترکیب‌کنندهٔ کانال…
++	Channel:	کانال:
++	Channel1	کانال 1
++	Channel2	کانال 2
++	Channel3	کانال 3
++	Channel4	کانال 4
++	Channels	کانال‌ها
++	Channels:	کانال‌ها:
++	Character	نویسه
++	Character Panel	پانل شخصیت
++	Character Styles	سبک های شخصیت
++	Character Styles Panel	پانل سبک شخصیت
++	Charcoal	زغال چوب
++	Charcoal Area	منطقه زغال سنگ
++	Charcoal Thickness	ضخامت زغال چوب
++	Check All Layers	همه لایه ها را بررسی کنید
++	Check for Updates	به روز رسانی ها را بررسی کنید
++	Check Spelling	املا را بررسی کنید
++	Check Spelling…	بررسی املا…
++	Checkerboard	تخته شطرنجی
++	Chisel Hard	اسکنه سخت
++	Chisel Soft	اسکنه نرم
++	Choke	خفه کردن
++	Choose a format that keeps it, such as Photoshop (PSD), or save a copy.	قالبی را انتخاب کنید که آن را حفظ کند، مانند فتوشاپ (PSD)، یا یک کپی ذخیره کنید.
++	Choose a gradient file (.grd).	یک فایل گرادیان (grd.) را انتخاب کنید.
++	Choose a new shortcut for this command, or leave it without one.	یک میانبر جدید برای این دستور انتخاب کنید یا آن را بدون آن رها کنید.
++	Choose Folder	پوشه را انتخاب کنید
++	Choose Stack Mode:	حالت پشته را انتخاب کنید:
++	Choose…	انتخاب کنید…
++	Chrome	کروم
++	CIE RGB	CIE RGB
++	Circle	دایره
++	Circularity	دایره ای بودن
++	City	شهر
++	Clarity	وضوح موضعی
++	Classic	کلاسیک
++	Classic Theme	تم کلاسیک
++	Cleanliness	پاکیزگی
++	Clear	پاک کردن
++	Clear All	پاک کردن همه
++	Clear Amount	پاک کردن مقدار
++	Clear Brush Controls	پاک کردن کنترل های قلم‌مو
++	Clear Brush Strokes	پاک کردن حرکت‌های قلم‌مو
++	Clear Canvas Guides	پاک کردن راهنمای بوم
++	Clear Existing Guides	پاک کردن راهنماهای موجود
++	Clear Guides	راهنماها را پاک کنید
++	Clear History	پاک کردن تاریخچه
++	Clear Layer Style	سبک لایه شفاف
++	Clear Override	حذف لغو
++	Clear Recent Files	پاک کردن فهرست پرونده‌های اخیر
++	Clear Samples	پاک کردن نمونه ها
++	Clear Selected Artboard Guides	راهنماهای Artboard انتخاب شده را پاک کنید
++	Clear Selected Guides	راهنماهای انتخاب شده را پاک کنید
++	Clear Selection	پاک کردن انتخاب
++	Clear Slices	برش ها را پاک کنید
++	Clear Smart Filters	فیلترهای هوشمند را پاک کنید
++	Click a red pupil to neutralize it	روی یک مردمک قرمز کلیک کنید تا خنثی شود
++	Click a segment to add an anchor point · {alt}-click an anchor to delete it	برای افزودن یک نقطه لنگر روی یک بخش کلیک کنید · {alt}-برای حذف آن روی یک لنگر کلیک کنید
++	Click an anchor point to delete it · {alt}-click a segment to add one	برای حذف روی یک نقطه لنگر کلیک کنید · {alt}-برای افزودن یک بخش، روی آن کلیک کنید
++	Click sets foreground · right-click sets background	روی sets foreground کلیک کنید · راست کلیک کنید sets background
++	Click the first point or press {key} to close · {del} removes a point · Esc cancels	روی اولین نقطه کلیک کنید یا {key} را فشار دهید تا بسته شود · {del} یک نقطه را حذف می‌کند · Esc لغو می‌شود
++	Click the first point or press {key} to close · Esc cancels	اولین نقطه را کلیک کنید یا {key} را فشار دهید تا بسته شود · Esc لغو می‌شود
++	Click the first point or press ↵ to close · Esc cancels	اولین نقطه را کلیک کنید یا ↵ را فشار دهید تا بسته شود · Esc لغو می‌شود
++	Click the image to add a pin; drag a pin to move it, or its ring to change its blur. Delete removes the selected pin.	برای افزودن پین روی تصویر کلیک کنید. یک پین را بکشید تا حرکت دهید یا حلقه آن را برای تغییر تاری آن بکشید. Delete پین انتخاب شده را حذف می‌کند.
++	Click to add a point · drag off or {key}-click or Delete to remove	برای افزودن یک نقطه کلیک کنید · بکشید یا {key}-کلیک کنید یا Delete را حذف کنید
++	Click to add a point · drag off or ⌘/Ctrl-click or Delete to remove	برای افزودن یک نقطه کلیک کنید · بکشید یا برای حذف ⌘/Ctrl یا Delete را کلیک کنید
++	Click to add a point, right-click to remove	برای افزودن یک نقطه کلیک کنید، برای حذف کلیک راست کنید
++	Click to add text	برای افزودن متن کلیک کنید
++	Click to apply, {key}-click to clear overrides, double-click for Style Options	برای اعمال کلیک کنید، {key} - برای پاک کردن موارد لغو، دوبار کلیک کنید برای گزینه‌های سبک
++	Click to apply, ⌥-click to clear overrides, double-click for Style Options	برای اعمال کلیک کنید، برای پاک کردن موارد لغو، ⌥-کلیک کنید، برای گزینه های سبک دوبار کلیک کنید
++	Click to edit the gradient	برای ویرایش گرادینت کلیک کنید
++	Click to fill similar colours	برای پر کردن رنگ های مشابه کلیک کنید
++	Click to pick · Esc to cancel	برای انتخاب کلیک کنید · برای لغو Esc
++	Click to place · Alt-click or drag off-canvas to remove	برای قرار دادن کلیک کنید · Alt-کلیک کنید یا روی بوم را بکشید تا حذف شود
++	Click to restore the current colour	برای بازیابی رنگ فعلی کلیک کنید
++	Click to sample the foreground colour  ·  {key}-click for background	برای نمونه رنگ پیش زمینه کلیک کنید · {key}-برای پس زمینه کلیک کنید
++	Click to zoom in  ·  {key}-click to zoom out  ·  drag right/left to zoom in/out	برای بزرگ‌نمایی کلیک کنید · {key}-برای کوچک‌نمایی کلیک کنید · برای بزرگ‌نمایی/کوچک‌نمایی به راست/چپ بکشید
++	Click to zoom in  ·  ⌥-click to zoom out	برای بزرگنمایی کلیک کنید · ⌥-برای بزرگنمایی کلیک کنید
++	Click with the Note tool to add a note.	برای افزودن یادداشت با ابزار Note کلیک کنید.
++	Click, then move along an edge · click to fasten a point · {alt}-click for a straight segment · double-click to close	کلیک کنید، سپس در امتداد یک یال حرکت کنید · برای محکم کردن یک نقطه کلیک کنید · {alt}-برای قسمت مستقیم کلیک کنید · برای بستن دوبار کلیک کنید
++	Click: corner · Drag: smooth · {alt}-drag: break handle · Click or drag first point: close · {key} finish · Esc cancel	کلیک کنید: گوشه · کشیدن: صاف · {alt}-کشیدن: دسته شکستن · اولین نقطه را کلیک یا بکشید: بستن · {key} پایان · Esc لغو
++	Click: corner · Drag: smooth · Click first point: close · {key} finish · Esc cancel	کلیک کنید: گوشه · کشیدن: صاف · روی نقطه اول کلیک کنید: بستن · {key} پایان · Esc لغو شود
++	Click: corner · Drag: smooth · Click first point: close · ↩ finish · Esc cancel	کلیک کنید: گوشه · کشیدن: صاف · روی نقطه اول کلیک کنید: بستن · ↩ پایان · Esc لغو
++	Click: select anchor · Drag: move anchor, handle or segment · {shift}-click: add · {alt}-click: whole subpath	کلیک کنید: لنگر را انتخاب کنید · کشیدن: حرکت لنگر، دسته یا بخش · {shift}-کلیک: افزودن · {alt}-کلیک: کل مسیر فرعی
++	Click: smooth point · Double-click: corner · Drag a point: move · Click first point: close · {key} finish	کلیک کنید: نقطه صاف · دوبار کلیک کنید: گوشه · یک نقطه را بکشید: حرکت کنید · روی نقطه اول کلیک کنید: بستن · {key} پایان
++	Clip thumbnails to layer bounds	محدود کردن تصویرک‌ها به مرز لایه
++	Clip Thumbnails to Layer Bounds	محدود کردن تصویرک‌ها به مرز لایه
++	Clip to layer below	کلیپ به لایه زیر
++	Clipboard	حافظهٔ موقت
++	Clipped	بریده شده
++	Clipping Mask	ماسک برش
++	Clipping Path	مسیر برش
++	Clipping Path…	مسیر برش…
++	Clone	تکثیر
++	Clone Source	مبدأ تکثیر
++	Clone source {n} ({key}-click with Clone Stamp to set)	مبدأ تکثیر {n}؛ برای تنظیم با ابزار مهر تکثیر و {key} کلیک کنید
++	Clone source set at {x}, {y}	مبدأ تکثیر در {x}، {y} تنظیم شد
++	Clone Stamp	مهر تکثیر
++	Clone Stamp Tool	ابزار مهر تکثیر
++	Close	بستن
++	Close All	بستن همه
++	Close Others	بستن سایر موارد
++	Close Panel	پنل را ببندید
++	Close Style Options	گزینه های سبک را ببندید
++	Close Tab Group	گروه برگه را ببندید
++	Close Window	بستن پنجره
++	Close without saving	بستن بدون ذخیره
++	Clouds	ابرها
++	Clumped	توده ای
++	Cmd	Cmd
++	Cmyk	Cmyk
++	CMYK Color	رنگ CMYK
++	CMYK:	CMYK:
++	Coarse Dots	نقاط درشت
++	Coated CMYK	CMYK روکش شده
++	Coated-cmyk	پوشش دار-cmyk
++	Coerce to sRGB	اجبار به sRGB
++	Collapse	فرو ریختن
++	Collapse All Groups	کوچک کردن همه گروه ها
++	Collapse group  ({key}-click: all groups)	جمع کردن گروه ({key}-کلیک کنید: همه گروه‌ها)
++	Collapse group  (⌥-click: all groups)	جمع کردن گروه (⌥-کلیک کنید: همه گروه ها)
++	Collapse Panel Group	جمع کردن گروه پانل
++	Color	رنگ
++	Color & Swatches	رنگ و نمونه
++	Color Adaptation	سازگاری رنگ
++	Color Balance	تعادل رنگ
++	Color Balance…	تعادل رنگ…
++	Color Blindness — Deuteranopia-type	کوررنگی - از نوع دوترانوپیا
++	Color Blindness — Protanopia-type	کوررنگی - از نوع پروتانوپیا
++	Color Burn	تیره‌سازی رنگ
++	Color Burn (Paint.NET)	رنگ سوزی (Paint.NET)
++	Color Decontaminate	رنگ زدایی
++	Color Decontaminate…	رنگ زدایی …
++	Color Detail	جزئیات رنگ
++	Color Dodge	روشن‌سازی رنگ
++	Color Dodge (Paint.NET)	روشن‌سازی رنگ (Paint.NET)
++	Color Dynamics	دینامیک رنگ
++	Color Grading	درجه بندی رنگ
++	Color Halftone	رنگ نیم تنه
++	Color Halftone…	نیم تن رنگی…
++	Color indicates	رنگ نشان می دهد
++	Color Indicates Masked Areas	رنگ قسمت های ماسک شده را نشان می دهد
++	Color Indicates Selected Areas	رنگ مناطق انتخاب شده را نشان می دهد
++	Color Indicates:	رنگ نشان‌دهندهٔ:
++	Color Lookup	جستجوی رنگ
++	Color Lookup Tables	جداول جستجوی رنگ
++	Color Lookup Tables…	جداول جستجوی رنگ…
++	Color Lookup…	نگاشت رنگ…
++	Color Management	مدیریت رنگ
++	Color Management Policies	سیاست های مدیریت رنگ
++	Color management: {error}	مدیریت رنگ: {error}
++	Color Mixer	میکسر رنگ
++	Color Mode	حالت رنگ
++	Color Noise Reduction	کاهش نویز رنگی
++	Color Overlay	روکش رنگ
++	Color Overlay…	روکش رنگ…
++	Color picker	انتخابگر رنگ
++	Color Picker	انتخابگر رنگ
++	Color Picker ({name})	انتخابگر رنگ ({name})
++	Color Picker (Background Color)	انتخابگر رنگ (رنگ پس زمینه)
++	Color Picker (Crop Shield Color)	انتخابگر رنگ (رنگ سپر برش)
++	Color Picker (Custom Canvas Color)	انتخابگر رنگ (رنگ بوم سفارشی)
++	Color Picker (Fill Color)	انتخابگر رنگ (پر کردن رنگ)
++	Color Picker (Foreground Color)	انتخابگر رنگ (رنگ پیش زمینه)
++	Color Picker (Layer Style Color)	انتخابگر رنگ (رنگ سبک لایه)
++	Color Picker (Solid Color)	انتخابگر رنگ (رنگ ثابت)
++	Color Picker (Stroke Color)	انتخابگر رنگ (خط دور)
++	Color Picker (Text Color)	انتخابگر رنگ (رنگ متن)
++	Color Priority	اولویت رنگ
++	Color Profile	نمایه رنگی
++	Color Range	محدوده رنگ
++	Color Range preview	پیش‌نمایش محدوده رنگ
++	Color Range…	محدودهٔ رنگ…
++	Color Replacement	جایگزینی رنگ
++	Color Replacement Tool	ابزار جایگزینی رنگ
++	Color Sampler Tool	ابزار نمونه برداری رنگ
++	Color Settings	تنظیمات رنگ
++	Color Settings…	تنظیمات رنگ…
++	Color space	فضای رنگ
++	Color Swatches	نمونه های رنگی
++	Color Table	جدول رنگ
++	Color Table…	جدول رنگ…
++	Color to Alpha…	رنگ به آلفا…
++	Color:	رنگ:
++	Color…	رنگ…
++	Colored Pencil	مداد رنگی
++	Colorize	رنگ آمیزی کنید
++	ColorMatch RGB	ColorMatch RGB
++	Colors	رنگ ها
++	ColorSync	ColorSync
++	Column width	عرض ستون
++	Columns	ستون‌ها
++	Combine Shapes	شکل ها را ترکیب کنید
++	Comic Book	کتاب کمیک
++	Command	فرمان
++	command or shortcut	دستور یا میانبر
++	Commit any current edits ({key})	انجام هر گونه ویرایش فعلی ({key})
++	Commit any current edits (⌘↩)	انجام هر گونه ویرایش فعلی (⌘↩)
++	Commit current crop operation  ({key})	انجام عملیات برش فعلی ({key})
++	Commit current crop operation  (↵)	انجام عملیات برش فعلی (↵)
++	Commit Perspective Warp ({key})	Commit Warp Perspective ({key})
++	Commit Perspective Warp (↩)	تأیید تغییر شکل پرسپکتیو (↩)
++	Commit Puppet Warp ({key})	ارتکاب تار عروسکی ({key})
++	Commit Puppet Warp (↩)	کامیت تار عروسکی (↩)
++	Commit transform	تأیید تبدیل
++	Commit transform ({key})	انجام تبدیل ({key})
++	Commit transform (↩)	تأیید تبدیل (↩)
++	Commit warp ({key})	ارتکاب تاب ({key})
++	Commit warp (↩)	ارتکاب تاب (↩)
++	Commits	ثبت‌ها
++	Company	شرکت
++	Compare	مقایسه کنید
++	Compatibility	سازگاری
++	Compose	نوشتن
++	Compression	فشرده سازی
++	Concise	مختصر
++	Condensed	متراکم شده
++	Conditional Mode Change	تغییر حالت شرطی
++	Conditional Mode Change…	تغییر حالت شرطی…
++	Cone	مخروط
++	Cone - Inverted	مخروط - معکوس
++	Cone (Inverted)	مخروط (معکوس)
++	Confirm	تایید کنید
++	Conform	مطابقت دهید
++	Consolidate All to Tabs	ادغام همه در برگه ها
++	Constant	ثابت
++	Constrain proportions	نسبت ها را محدود کنید
++	Constraints	محدودیت ها
++	Constraints ({n})	محدودیت ها ({n})
++	Contact Sheet II	صفحه تماس II
++	Contact Sheet II…	برگه تماس دوم…
++	Conté Crayon	مداد رنگی کونته
++	Content-Aware	آگاه از محتوا
++	Content-Aware Fill	پر کردن آگاه از محتوا
++	Content-Aware Fill needs a selection on a pixel layer	پر کردن آگاه از محتوا به یک محدودهٔ انتخاب روی لایهٔ پیکسلی نیاز دارد
++	Content-Aware Fill…	پر کردن آگاه از محتوا…
++	Content-Aware Move	جابه‌جایی آگاه از محتوا
++	Content-Aware Move Tool	ابزار جابه‌جایی آگاه از محتوا
++	Content-Aware Scale	تغییر اندازهٔ آگاه از محتوا
++	Contents:	محتوا:
++	Contextual Alternates	جایگزین های متنی
++	Contiguous	پیوسته
++	Continue	ادامه دهید
++	Contour	کانتور
++	Contour Editor	ویرایشگر کانتور
++	Contract	قرارداد
++	Contract…	کوچک کردن…
++	Contrast	کنتراست
++	Contrasty	تضاد
++	Contributors	مشارکت کنندگان
++	Contributors: {contributors} · Commits: {commits}	مشارکت کنندگان: {contributors} · تعهدات: {commits}
++	Control port	پورت کنترل
++	Control:	کنترل:
++	Convert	تبدیل کنید
++	Convert for Smart Filters	تبدیل برای فیلترهای هوشمند
++	Convert Frames > Video Layers	تبدیل فریم ها > لایه های ویدیو
++	Convert Point Tool	تبدیل ابزار نقطه
++	Convert to Alpha Channel	تبدیل به کانال آلفا
++	Convert to Embedded	تبدیل به Embedded
++	Convert to Grayscale	تبدیل به Grayscale
++	Convert to Layers	تبدیل به لایه‌ها
++	Convert to Linked	تبدیل به لینک شده
++	Convert to Linked…	تبدیل به لینک شده…
++	Convert to Paragraph Text	تبدیل به متن پاراگراف
++	Convert to Point Text	تبدیل به متن نقطه
++	Convert to Profile	تبدیل به نمایه
++	Convert to Profile…	تبدیل به پروفایل…
++	Convert to Shape	تبدیل به شکل
++	Convert to Smart Object	تبدیل به شیء هوشمند
++	Convert to srgb	تبدیل به srgb
++	Convert to sRGB	تبدیل به sRGB
++	Convert to the working space ({profile})	تبدیل به فضای کاری ({profile})
++	Cool	باحال
++	Cooling L B B	خنک کننده L B B
++	Cooling80	خنک کننده 80
++	Cooling82	خنک کننده 82
++	Copies	کپی ها
++	Copper	مس
++	Copy	کپی
++	Copy Complete Stroke	کپی کل حرکت قلم‌مو
++	Copy Fill	پر کردن را کپی کنید
++	Copy Layer Style	کپی سبک لایه
++	Copy Merged	کپی ادغام‌شده
++	Copy Texture to Other Tools	کپی بافت به ابزارهای دیگر
++	Copyright	حق چاپ
++	Copyright and Contact Info	حق چاپ و اطلاعات تماس
++	Copyright Info URL	URL اطلاعات حق چاپ
++	Copyright Status	وضعیت حق نشر
++	Copyright Url	نشانی اینترنتی حق چاپ
++	Copyrighted	دارای حق چاپ است
++	Corner	گوشه
++	Corner Crop Marks	علامت های برش گوشه
++	Corner radius	شعاع گوشه
++	Corners	گوشه ها
++	Correct C A	C A را درست کنید
++	Correct Distortion	اعوجاج صحیح
++	Correct Vignette	وینیت صحیح
++	Correction	تصحیح
++	Could not complete the Free Transform command because the layer is locked.	نمی‌توان دستور Free Transform را تکمیل کرد زیرا لایه قفل است.
++	Could not open	باز نشد
++	Could not rename the action: {error}	نمی توان نام عمل را تغییر داد: {error}
++	Could not transform: the layer is empty	تبدیل نشد: لایه خالی است
++	Could not use Perspective Warp: the layer is empty	نمی توان از Perspective Warp استفاده کرد: لایه خالی است
++	Could not use Puppet Warp: no opaque pixels	نمی توان از Puppet Warp استفاده کرد: بدون پیکسل مات
++	Could not use Puppet Warp: the layer is empty	نمی توان از Puppet Warp استفاده کرد: لایه خالی است
++	Could not use the move tool because the layer is locked.	نمی توان از ابزار حرکت استفاده کرد زیرا لایه قفل شده است.
++	Couldn't open {name}: {error}	{name} باز نشد: {error}
++	Couldn't place {name}: {error}	{name} قرار داده نشد: {error}
++	Couldn't save preferences: {error}. Retrying…	تنظیمات برگزیده ذخیره نشد: {error}. در حال تلاش مجدد…
++	Count	بشمار
++	Count Jitter	کنت جیتر
++	Count Tool	ابزار شمارش
++	Count: {n}	تعداد: {n}
++	Country	کشور
++	Cove - Deep	یارو - عمیق
++	Cove - Shallow	یارو - کم عمق
++	CPU (no GPU acceleration)	CPU (بدون شتاب GPU)
++	CPU / Compatibility	CPU / سازگاری
++	Crack Brightness	روشنایی ترک‌ها
++	Crack Depth	عمق ترک
++	Crack Spacing	فاصله بین ترک ها
++	Craquelure	کرکولور
++	Create	ایجاد کنید
++	Create a new count group	یک گروه شمارش جدید ایجاد کنید
++	Create a new document or open an existing file.	یک سند جدید ایجاد کنید یا یک فایل موجود را باز کنید.
++	Create a new elliptical frame	یک قاب بیضوی جدید ایجاد کنید
++	Create a new group	یک گروه جدید ایجاد کنید
++	Create a new layer	یک لایه جدید ایجاد کنید
++	Create a new layer  (⇧⌘N)	ایجاد یک لایه جدید (⇧⌘N)
++	Create a new rectangular frame	یک قاب مستطیلی جدید ایجاد کنید
++	Create By	ایجاد توسط
++	Create Clipping Mask	ساخت ماسک برش
++	Create Date	ایجاد تاریخ
++	Create Droplet	Droplet را ایجاد کنید
++	Create Droplet…	ساخت ابزار پردازش خودکار…
++	Create Ellipse	بیضی ایجاد کنید
++	Create Layer	ایجاد لایه
++	Create Multiple Picture Packages	ایجاد بسته های تصویری چندگانه
++	Create new action	اقدام جدید ایجاد کنید
++	Create new brush from the current settings	قلم‌مو جدید از تنظیمات فعلی ایجاد کنید
++	Create new brush from these settings	از این تنظیمات قلم‌مو جدید ایجاد کنید
++	Create new brush preset from the current settings	از تنظیمات فعلی قلم‌مو از پیش تعیین شده جدید ایجاد کنید
++	Create new channel	ایجاد کانال جدید
++	Create new count group	ایجاد گروه شمارش جدید
++	Create new document from current state	ایجاد سند جدید از وضعیت فعلی
++	Create new fill or adjustment layer	لایه پر یا تنظیم جدید ایجاد کنید
++	Create new gradient	گرادیان جدید ایجاد کنید
++	Create new group	ایجاد گروه جدید
++	Create new layer	لایه جدید ایجاد کنید
++	Create new layer comp	کامپ لایه جدید ایجاد کنید
++	Create new path	مسیر جدید ایجاد کنید
++	Create new pattern from the selection	الگوی جدیدی از انتخاب ایجاد کنید
++	Create new set	مجموعه جدید ایجاد کنید
++	Create new shape from the current path	شکل جدیدی از مسیر فعلی ایجاد کنید
++	Create new snapshot	عکس فوری جدید ایجاد کنید
++	Create new style (from the selected type)	ایجاد سبک جدید (از نوع انتخاب شده)
++	Create new style from the selected layer	استایل جدیدی از لایه انتخاب شده ایجاد کنید
++	Create new swatch	نمونه جدید ایجاد کنید
++	Create new tool preset	از پیش تنظیم ابزار جدید ایجاد کنید
++	Create Plane	هواپیما ایجاد کنید
++	Create Polygon	چند ضلعی ایجاد کنید
++	Create Rectangle	مستطیل ایجاد کنید
++	Create Smart Object after Loading Layers	پس از بارگذاری لایه ها، شی هوشمند ایجاد کنید
++	Create Snapshot	ایجاد عکس فوری
++	Create Texture	ایجاد بافت
++	Create Triangle	مثلث ایجاد کنید
++	Create Vector Mask	ماسک برداری ایجاد کنید
++	Create Video Timeline	ایجاد خط زمانی ویدیویی
++	Create Warped Text	ایجاد متن تاب خورده
++	Create Work Path	ایجاد مسیر کاری
++	Create…	ایجاد…
++	Credit	اعتبار
++	Crisp	ترد
++	Crop	برش تصویر
++	Crop and Straighten Photos	برش و صاف کردن عکس ها
++	Crop Factor	عامل برش
++	Crop Shield color	رنگ سپر برش
++	Crop Tool	ابزار برش تصویر
++	Cross	صلیب
++	Cross Process	فرآیند متقابل
++	Crosshatch	متقاطع
++	Crosswise	متقاطع
++	Crystallize	متبلور شود
++	Crystallize…	کریستالیزه کردن…
++	Ctrl	Ctrl
++	Currency	ارز
++	current	جاری
++	Current	فعلی
++	Current & Below	لایهٔ فعلی و پایین‌تر
++	Current & Below No Adjustments	فعلی و زیر بدون تنظیمات
++	Current Layer	لایهٔ فعلی
++	Current Path	مسیر فعلی
++	Current Size	اندازه فعلی
++	Current Time	زمان فعلی
++	Current Tool	ابزار فعلی
++	Current Tool Only	فقط ابزار فعلی
++	Cursors	نشانگرها
++	Cursors…	نشانگرها…
++	Curvature Pen Tool	ابزار قلم انحنا
++	Curve	منحنی
++	Curve Darks	تاریکی منحنی
++	Curve Fit:	برازش منحنی:
++	Curve Highlights	نکات برجسته منحنی
++	Curve Lights	چراغ های منحنی
++	Curve Shadows	سایه های منحنی
++	Curve Splits	شکاف های منحنی
++	Curves	منحنی‌ها
++	Curves…	منحنی‌ها…
++	Custom	سفارشی
++	Custom background color	رنگ پس زمینه سفارشی
++	Custom Branch Color	رنگ شاخه سفارشی
++	Custom dark	تاریک سفارشی
++	Custom light	نور سفارشی
++	Custom pattern	الگوی سفارشی
++	Custom Pattern:	الگوی سفارشی:
++	Custom Pixel Aspect Ratio	نسبت ابعاد پیکسل سفارشی
++	Custom Pixel Aspect Ratio…	نسبت تصویر سفارشی پیکسل…
++	Custom Shape Tool	ابزار شکل سفارشی
++	Custom Shapes	اشکال سفارشی
++	Custom…	سفارشی…
++	Cut	برش
++	Cutout	برش
++	Cw	ساعت‌گرد
++	Cyan	فیروزه ای
++	Cyan  ·  Red	فیروزه ای · قرمز
++	Cyans	فیروزه ای ها
++	Cycle Orientation	جهت گیری چرخه
++	Cycle Overlay	همپوشانی چرخه
++	Cycle Screen Mode	چرخه حالت صفحه نمایش
++	Cyrillic	سیریلیک
++	D1/DV NTSC (0.91)	D1/DV NTSC (0.91)
++	D1/DV NTSC Widescreen (1.21)	D1/DV NTSC Widescreen (1.21)
++	D1/DV PAL (1.09)	D1/DV PAL (1.09)
++	D1/DV PAL Widescreen (1.46)	صفحه عریض D1/DV PAL (1.46)
++	Daisies	بابونه
++	Dark	تیره
++	Dark gray	خاکستری تیره
++	Dark Gray	خاکستری تیره
++	Dark Intensity	شدت تاریکی
++	Dark Rough	خشن تیره
++	Dark Strokes	حرکت‌های تیرهٔ قلم‌مو
++	Dark Theme	پوستهٔ تیره
++	Darken	تیره‌تر
++	Darken Amount	مقدار تیره کنید
++	Darken Interface	تاریک کردن رابط
++	Darken Only	فقط تیره شود
++	Darker Color	رنگ تیره تر
++	Darkness	تاریکی
++	Darks	تون‌های تیره
++	Dash	خط تیره
++	Dash / gap lengths × stroke width	طول خط‌چین و فاصله × ضخامت خط
++	Dash offset	آفست خط تیره
++	Dashed	بریده بریده
++	Dashed line	خط چین
++	Dashed lines	خطوط شکسته
++	Data	داده ها
++	Data Set: {name}  ({index}/{total})	مجموعه داده: {name} ({index}/{total})
++	Data Sets	مجموعه داده ها
++	Data Sets as Files	مجموعه داده ها به عنوان فایل
++	Data Sets as Files…	مجموعه داده ها به عنوان فایل…
++	Data Sets…	مجموعه داده…
++	Date	تاریخ
++	Date and Time	تاریخ و زمان
++	Date Created	تاریخ ایجاد
++	DateTime Original	DateTime اصلی
++	Day For Night	روز برای شب
++	De-Interlace	درهم زدایی
++	De-Interlace…	جداسازی…
++	Decontaminate	آلودگی زدایی کنید
++	Decrease Brush Hardness	کاهش سختی برس
++	Decrease Brush Size	سایز برس را کاهش دهید
++	Decrease Type Size	اندازه نوع را کاهش دهید
++	Decrease Type Size by 10	اندازه نوع را 10 کاهش دهید
++	Deep	عمیق
++	Deep Blue	آبی عمیق
++	Deep Emerald	زمرد عمیق
++	Deep Red	قرمز عمیق
++	Deep Yellow	زرد عمیق
++	Default	پیش‌فرض
++	Default colours (D)	رنگ های پیش فرض (D)
++	Default Features	ویژگی های پیش فرض
++	Default Foreground and Background Colors	رنگ های پیش زمینه و پس زمینه پیش فرض
++	Default Leaves	برگ های پیش فرض
++	Default PhotoCraft Size	اندازه پیش‌فرض PhotoCraft
++	Default Photoshop Size	اندازه پیش فرض فتوشاپ
++	Default printer	چاپگر پیش فرض
++	Default restored.	پیش فرض بازیابی شد.
++	Defaults	پیش فرض ها
++	Defaults restored.	پیش فرض ها بازیابی شدند.
++	Define	تعریف کنید
++	Define at least one variable first.	ابتدا حداقل یک متغیر تعریف کنید.
++	Define Brush Preset	Brush Preset را تعریف کنید
++	Define Brush Preset…	تعریف پیش‌تنظیم قلم‌مو…
++	Define Custom Shape	شکل سفارشی را تعریف کنید
++	Define Custom Shape…	تعریف شکل سفارشی…
++	Define Pattern	الگو را تعریف کنید
++	Define Pattern…	تعریف الگو…
++	Define…	تعریف…
++	Definition	تعریف
++	Defringe	منحرف کردن
++	Defringe…	به تعویق انداختن…
++	Degrees	درجه
++	Dehaze	مه‌زدایی
++	Delete	حذف
++	Delete {count} layers? {names}	{count} لایه حذف شود؟ {names}
++	Delete All Empty Layers	تمام لایه های خالی را حذف کنید
++	Delete Anchor Point Tool	حذف Anchor Point Tool
++	Delete and Fill Selection	حذف و پر کردن انتخاب
++	Delete brush	قلم‌مو را حذف کنید
++	Delete Brush	قلم‌مو را حذف کنید
++	Delete Channel	حذف کانال
++	Delete count group	حذف گروه شمارش
++	Delete Crop Preset…	حذف پیش‌تنظیم برش…
++	Delete Cropped Pixels	پیکسل های برش خورده را حذف کنید
++	Delete current channel	کانال فعلی را حذف کنید
++	Delete current state	وضعیت فعلی را حذف کنید
++	Delete effect layer	حذف لایه افکت
++	Delete Filter Mask	ماسک فیلتر را حذف کنید
++	Delete Frame	حذف قاب
++	Delete Group	حذف گروه
++	Delete layer	حذف لایه
++	Delete Layer	حذف لایه
++	Delete layer ‘{name}’?	لایه "{name}" حذف شود؟
++	Delete layer comp	لایه کامپ را حذف کنید
++	Delete Layer Mask	حذف ماسک لایه
++	Delete layer?	لایه حذف شود؟
++	Delete Layer…	حذف لایه…
++	Delete Layers	حذف لایه ها
++	Delete Mask	ماسک را حذف کنید
++	Delete note	حذف یادداشت
++	Delete path	حذف مسیر
++	Delete Path	حذف مسیر
++	Delete Pins	حذف پین ها
++	Delete Preset…	حذف از پیش تعیین شده…
++	Delete selected measurements	اندازه گیری های انتخابی را حذف کنید
++	Delete Shortcut	حذف میانبر
++	Delete Smart Filters	حذف فیلترهای هوشمند
++	Delete Snapshot	Snapshot را حذف کنید
++	Delete style	حذف سبک
++	Delete the vector mask?	ماسک برداری حذف شود؟
++	Delete this set	این مجموعه را حذف کنید
++	Delete Timeline	حذف تایم لاین
++	Delete tool preset	حذف از پیش تعیین شده ابزار
++	Delete Tool Preset	حذف از پیش تعیین شده ابزار
++	Delete vector mask	ماسک برداری را حذف کنید
++	Delete Vector Mask	ماسک برداری را حذف کنید
++	Delete Workspace	فضای کاری را حذف کنید
++	Delete Workspace…	حذف فضای کاری…
++	Delete…	حذف…
++	Density	تراکم
++	Density:	تراکم:
++	Depth	عمق
++	Depth Jitter	نوسان عمق
++	Depth Map	نقشه عمق
++	Depth Mode	حالت عمق
++	Desaturate	حذف اشباع
++	Desaturate Monitor Colors By	رنگ مانیتور غیر اشباع شده توسط
++	Description	توضیحات
++	Deselect	لغو انتخاب
++	Deselect All	همه را لغو انتخاب کنید
++	Deselect Layers	لایه ها را از حالت انتخاب خارج کنید
++	Despeckle	دسپکل
++	Destination	مقصد
++	Detail	جزئیات
++	Detailed	به تفصیل
++	Details	جزئیات
++	Detect Faces	تشخیص چهره ها
++	Developing {name}	در حال توسعه {name}
++	Diagonal	مورب
++	Diagonal (Descending)	مورب (نزولی)
++	Diameter	قطر
++	Diameter:	قطر:
++	Diamond	الماس
++	Diamond Gradient	شیب الماس
++	Difference	اختلاف
++	Difference Clouds	ابرهای متفاوت
++	Diffuse	پراکنده
++	Diffuse Glow	درخشش پراکنده
++	Diffuse…	پراکنده…
++	Diffusion	انتشار
++	Digits	ارقام
++	Dimensions:	ابعاد:
++	Direct Selection Tool	ابزار انتخاب مستقیم
++	Direction	جهت
++	Direction Balance	تعادل جهت
++	Direction of Stroke	جهت حرکت قلم‌مو
++	DirectX 12	DirectX 12
++	Disable	غیر فعال کردن
++	Disable Filter Mask	فیلتر ماسک را غیرفعال کنید
++	Disable Layer Mask	غیرفعال کردن ماسک لایه
++	Disable Mask	غیرفعال کردن ماسک
++	Disable Smart Filters	فیلترهای هوشمند را غیرفعال کنید
++	Disable Symmetry Path	Symmetry Path را غیرفعال کنید
++	Disabled	از کار افتاده است
++	Discard	دور ریختن تغییرات
++	Discard Changes	حذف تغییرات
++	Discard Layers and Save a Copy	لایه ها را دور بیندازید و یک کپی ذخیره کنید
++	Discard the embedded profile (don't color manage)	نمایه تعبیه شده را دور بیندازید (رنگ را مدیریت نکنید)
++	Discontiguous	ناپیوسته
++	Discord	اختلاف نظر
++	Discretionary Ligatures	لیگاتورهای اختیاری
++	Disks	دیسک ها
++	Dismiss	رد کردن
++	Displace	جابجا شود
++	Displace…	جابجایی…
++	Display	نمایش
++	Display name	نام نمایشی
++	Display p3	نمایش p3
++	Display P3	صفحه نمایش P3
++	Display profile not used	نمایه نمایش استفاده نشده است
++	Display profiles: {reason}	نمایش نمایه ها: {reason}
++	Display Text	نمایش متن
++	Display-p3	نمایشگر-p3
++	Dissolve	حل‌شدن
++	Distance	فاصله
++	Distort	اعوجاج
++	Distortion	تحریف
++	Distribute	توزیع کنید
++	Distribution	توزیع
++	Dither	پراکندگی رنگ
++	Divide	تقسیم کنید
++	Divide…	تقسیم…
++	Do you want to save the changes you made to “{name}” before closing?	آیا می خواهید تغییراتی را که قبل از بستن در "{name}" ایجاد کرده اید ذخیره کنید؟
++	Do you want to save the changes you made to “{name}” before quitting?	آیا می‌خواهید تغییراتی را که قبل از خروج در «{name}» ایجاد کرده‌اید ذخیره کنید؟
++	Do you want to save you made to “{name}” before quitting?	آیا می‌خواهید قبل از خروج در «{name}» ذخیره کنید؟
++	Doc: {flat}/{layered}	سند: {flat}/{layered}
++	Doc: {w} × {h} px	سند: {w} × {h} px
++	Dock Panel	پانل داک
++	Document	سند
++	Document Bounds	محدوده سند
++	Document Dimensions	ابعاد سند
++	Document Profile	نمایه سند
++	Document Size	اندازه سند
++	Document Sizes	اندازه های اسناد
++	Documentation	مستندات
++	Documents	اسناد
++	Dodge	روشن‌سازی
++	Dodge Tool	ابزار روشن‌سازی
++	Dodge/Burn	روشن‌سازی و تیره‌سازی
++	Domed	گنبدی
++	Domed (Inverted)	گنبدی (وارونه)
++	Don't also tick Mirror Image in Print Settings…: the two flips cancel out.	همچنین تیک Mirror Image را در تنظیمات چاپ نزنید...: دو ورق زدن لغو می شوند.
++	Don't Import	واردات نکنید
++	Don't Save	ذخیره نشود
++	Don't show again	دیگر نشان نده
++	Done	انجام شد
++	Dont Enlarge	بزرگ نکنید
++	Dot	نقطه
++	Dots	نقطه ها
++	Dotted	نقطه چین
++	Double click layer mask launches select and mask	ماسک لایه دوبار کلیک کنید Select and mask را اجرا می‌کند
++	Double Line	دو خط
++	Down	پایین
++	Draft	پیش نویس
++	Drag (lasso) or click points (polygonal) · {add} add · {sub} subtract	برای کمند بکشید یا برای چندضلعی روی نقطه‌ها کلیک کنید · {add} افزودن · {sub} کم کردن
++	Drag a box or click four corners · drag the corners onto the edges of a skewed shape · {commit} commits · Esc cancels	یک کادر بکشید یا چهار گوشه را کلیک کنید · گوشه‌ها را روی لبه‌های شکل اریب بکشید · {commit} تأیید · Esc انصراف
++	Drag a crop box · drag inside to move · edges resize ({ratio} ratio, {centre} centre) · Space moves while drawing · {commit} commits · Esc cancels	کادر برش را بکشید · داخل آن را برای جابه‌جایی بکشید · لبه‌ها اندازه را تغییر می‌دهند ({ratio} نسبت، {centre} مرکز) · Space جابه‌جایی هنگام رسم · {commit} تأیید · Esc انصراف
++	Drag a crop box · drag inside to move · edges resize ({ratio} ratio, {centre} centre) · Space moves while drawing · arrows nudge · X swaps orientation · {commit} commits · Esc cancels	کادر برش را بکشید · داخل آن را برای جابه‌جایی بکشید · لبه‌ها اندازه را تغییر می‌دهند ({ratio} نسبت، {centre} مرکز) · Space جابه‌جایی هنگام رسم · کلیدهای جهت جابه‌جایی جزئی · X تغییر جهت · {commit} تأیید · Esc انصراف
++	Drag a rectangle around the object	یک مستطیل در اطراف جسم بکشید
++	Drag around the centre to rotate the view  ·  Shift constrains to 15°	برای چرخاندن نما به اطراف مرکز بکشید · محدودیت ها را به 15 درجه تغییر دهید
++	Drag on the image to add a constraint; Shift for horizontal/vertical; right-click to delete.	برای افزودن یک محدودیت روی تصویر بکشید. تغییر جهت افقی/عمودی. برای حذف کلیک راست کنید
++	Drag or click polygon points · hold Alt during lasso for straight segments · {add} add · {sub} before drawing subtracts	نقاط چند ضلعی را بکشید یا کلیک کنید · Alt را در حین کمند برای پاره های مستقیم نگه دارید · {add} اضافه کنید · {sub} قبل از ترسیم تفریق
++	Drag the arrow to set the angle, the dots to set the roundness	فلش را برای تنظیم زاویه، نقطه ها را برای تنظیم گردی بکشید
++	Drag the handles on the outline to resize and turn it, the square to round its corners, and the dots inside to set where the blur starts.	دستگیره ها را روی طرح کلی بکشید تا اندازه را تغییر دهید و آن را بچرخانید، مربع را برای گرد کردن گوشه های آن، و نقاط داخل را برای تعیین جایی که تاری شروع می‌شود، بکشید.
++	Drag the handles on the outline to resize and turn it; the ring sets the blur angle.	دستگیره ها را روی طرح کلی بکشید تا اندازه را تغییر دهید و آن را بچرخانید. حلقه زاویه تاری را تعیین می‌کند.
++	Drag the pin to move the band, or its ring to change its blur. Drag the solid lines to widen the sharp band, the dashed lines to set the transition, and the dots to turn it.	پین را برای حرکت دادن باند یا حلقه آن را برای تغییر تاری بکشید. خطوط ثابت را بکشید تا نوار تیز باز شود، خطوط چین خورده را برای تنظیم انتقال، و نقاط را برای چرخاندن آن بکشید.
++	Drag to draw a gradient	برای رسم یک گرادیان بکشید
++	Drag to draw the curve · {key}-click draws a straight line	برای رسم منحنی بکشید · {key}-کلیک کنید یک خط مستقیم می‌کشد
++	Drag to move the active layer	برای جابجایی لایه فعال بکشید
++	Drag to move the active shape's path or the Work Path	برای حرکت دادن مسیر شکل فعال یا مسیر کار بکشید
++	Drag to move the layer	برای جابجایی لایه بکشید
++	Drag to pan  ·  hold Space with any tool	برای حرکت بکشید · Space را با هر ابزاری نگه دارید
++	Drag to pan · Scroll to zoom · Double-click to fit	برای حرکت بکشید · برای بزرگنمایی اسکرول کنید · برای جا دادن دوبار کلیک کنید
++	Drag: draw freehand · {alt}-click: straight segment · Release on the start point: close	بکشید: با دست بکشید · {alt}-کلیک کنید: بخش مستقیم · رها کردن در نقطه شروع: بستن
++	Drag: draw freehand · Release on the start point: close	کشیدن: با دست آزاد بکشید · رها کردن در نقطه شروع: بستن
++	Draw to modify the curve	برای اصلاح منحنی رسم کنید
++	Draw with the Pen tool (P) or make a work path from a selection.	با ابزار Pen (P) رسم کنید یا یک مسیر کاری از یک انتخاب ایجاد کنید.
++	Driver: {driver}	راننده: {driver}
++	Drop an image or PSD anywhere to open it.	یک تصویر یا PSD را در هر جایی رها کنید تا باز شود.
++	Drop shadow	سایهٔ بیرونی
++	Drop Shadow	سایهٔ بیرونی
++	Drop Shadow…	سایهٔ بیرونی…
++	Dry Brush	برس خشک
++	Dual Axis	دو محور
++	Dual Brush	برس دوتایی
++	Duotone	دورنگ
++	Duotone…	دورنگ…
++	Duplicate	تکراری
++	Duplicate Channel	کانال تکراری
++	Duplicate Frame	قاب تکراری
++	Duplicate Layer	لایه تکراری
++	Duplicate Layer Comp	لایه تکراری Comp
++	Duplicate Layer…	تکثیر لایه…
++	Duplicate Layers	لایه های تکراری
++	Duplicate Layers…	لایه های تکراری…
++	Duplicate Path	مسیر تکراری
++	Duplicate style	سبک تکراری
++	Duplicate…	تکراری…
++	Duplicated selection name	نام انتخاب تکراری
++	Duplication	تکراری
++	Duration	مدت زمان
++	Dust & Scratches	گرد و غبار و خراش
++	Dust & Scratches…	گرد و غبار و خراش …
++	DVCPRO HD 1080/HDV 1080 (1.5)	DVCPRO HD 1080/HDV 1080 (1.5)
++	Dynamic color sliders	لغزنده‌های پویای رنگ
++	Dynamics	دینامیک
++	East asian	آسیای شرقی
++	East Asian Features	ویژگی های شرق آسیا
++	Edge	لبه
++	Edge Brightness	روشنایی لبه
++	Edge Extension	پسوند لبه
++	Edge Fidelity	دقت لبه
++	Edge Intensity	شدت لبه
++	Edge Only	فقط لبه
++	Edge Simplicity	سادگی لبه
++	Edge Thickness	ضخامت لبه
++	Edge Width	عرض لبه
++	Edit	ویرایش
++	Edit › Keyboard Shortcuts › Reset All to Defaults undoes an import.	ویرایش › میانبرهای صفحه کلید › بازنشانی همه به پیش‌فرض‌ها یک واردات را لغو می‌کند.
++	Edit › Paste	ویرایش › چسباندن
++	Edit Contents	ویرایش محتوا
++	Edit in Quick Mask Mode	در حالت ماسک سریع ویرایش کنید
++	Edit in Quick Mask Mode  (Q)	ویرایش در حالت ماسک سریع (Q)
++	Edit in Standard Mode  (Q)	ویرایش در حالت استاندارد (Q)
++	Edit Pins	ویرایش پین ها
++	Edit Plane	ویرایش هواپیما
++	Edit points to modify the curve	نقاط را ویرایش کنید تا منحنی را تغییر دهید
++	Edit Selected Guides	راهنماهای انتخاب شده را ویرایش کنید
++	Edit Toolbar	ویرایش نوار ابزار
++	Edit Toolbar…	ویرایش نوار ابزار…
++	Edit Type	نوع ویرایش
++	Edit…	ویرایش…
++	Edits that change the whole document, such as a layer's blend mode, opacity or visibility, redraw all of it.	ویرایش‌هایی که کل سند را تغییر می‌دهند، مانند حالت ترکیبی، کدورت یا نمایان بودن یک لایه، همه آن را دوباره ترسیم می‌کنند.
++	Effect cache mb	جلوه کش mb
++	Effects	جلوه ها
++	Efficiency	کارایی
++	Efficiency: 100%	راندمان: 100%
++	Elevation	ارتفاع
++	Eliminate	از بین بردن
++	Ellipse Tool	ابزار بیضی
++	Elliptical Marquee Tool	ابزار انتخاب بیضوی
++	Email	ایمیل
++	Embed Color Profile	تعبیه نمایه رنگ
++	Embed profiles	تعبیه پروفایل ها
++	Embedded Profile Mismatch	عدم تطابق نمایه جاسازی شده
++	Emboss	برجسته‌سازی
++	Emboss…	برجسته‌سازی…
++	Emulsion Down	امولسیون پایین
++	Enable	فعال کردن
++	Enable {name}	فعال کردن {name}
++	Enable airbrush-style build-up effects	افکت‌های ساخت ایرقلم‌مو را فعال کنید
++	Enable animations	فعال کردن انیمیشن ها
++	Enable Crop Shield	Crop Shield را فعال کنید
++	Enable flick panning	حرکت متحرک را فعال کنید
++	Enable floating document window docking	اتصال پنجره سند شناور را فعال کنید
++	Enable Layer Mask	فعال کردن ماسک لایه
++	Enable Mask	ماسک را فعال کنید
++	Enable narrow options bar	نوار گزینه های باریک را فعال کنید
++	Enable Smart Filters	فیلترهای هوشمند را فعال کنید
++	Enable Timeline Quick Config	تنظیمات سریع Timeline را فعال کنید
++	Enable Vector Mask	ماسک برداری را فعال کنید
++	Enabled	فعال شد
++	End X	پایان X
++	End Y	پایان Y
++	Enhance Edge	Edge را تقویت کنید
++	Enhanced Controls	کنترل های پیشرفته
++	Enhanced Controls…	کنترل های پیشرفته…
++	Enlarged	بزرگ شده
++	Enter a name for the brush preset	یک نام برای از پیش تنظیم شده قلم‌مو وارد کنید
++	Enter a name for the crop preset	یک نام برای پیش تنظیم برش وارد کنید
++	Enter description…	توضیحات را وارد کنید…
++	Entire Font	تمام فونت
++	Entropy	آنتروپی
++	Equalize	یکنواخت‌سازی
++	Erase	پاک کردن
++	Erase with Brush or Pencil (hold)	پاک کردن با قلم‌مو یا مداد (نگه دارید)
++	Eraser	پاک کن
++	Eraser Tool	ابزار پاک‌کن
++	Error	خطا
++	Error File	فایل خطا
++	Errors	خطاها
++	Esc to cancel	Esc برای لغو
++	Essentials	ابزارهای ضروری
++	Even Fields	حتی فیلدز
++	Exact	دقیق
++	Exclude Overlapping Shapes	اشکال همپوشانی را حذف کنید
++	Excluded Area	منطقه مستثنی شده
++	Exclusion	حذف متقابل
++	EXIF	EXIF
++	EXIF Version	نسخه EXIF
++	Exit	خروج
++	Exit Quick Mask	از Quick Mask خارج شوید
++	Expand	گسترش دهید
++	Expand All Groups	همه گروه ها را گسترش دهید
++	Expand Detection Area	گسترش ناحیه تشخیص
++	Expand group  ({key}-click: all groups)	بزرگ کردن گروه ({key}-کلیک کنید: همه گروه‌ها)
++	Expand group  (⌥-click: all groups)	بزرگ کردن گروه (⌥-کلیک کنید: همه گروه‌ها)
++	Expand Panel Group	گروه پنل را گسترش دهید
++	Expand…	گسترش…
++	Expansion:	گسترش:
++	Export	خروجی گرفتن
++	Export As	صادرات به عنوان
++	Export As: {name}	صادرات به عنوان: {name}
++	Export As…	خروجی با قالب…
++	Export clipboard	صادرات کلیپ بورد
++	Export Contents	صادرات محتویات
++	Export Contents…	خروجی گرفتن از محتوا…
++	Export Image	صادرات تصویر
++	Export Options	گزینه های صادرات
++	Export Preferences	تنظیمات برگزیده صادرات
++	Export Preferences…	تنظیمات خروجی…
++	Export Presets	صادرات از پیش تنظیم شده
++	Export selected measurements (CSV)	صادرات اندازه‌گیری‌های انتخابی (CSV)
++	Export Settings	تنظیمات صادرات
++	Export Swatches for Exchange…	صادرات نمونه برای مبادله…
++	Export Swatches…	صادرات نمونه…
++	Export to	صادرات به
++	Export…	خروجی گرفتن…
++	Export/Import Presets	صادرات/واردات از پیش تنظیم شده
++	Export/Import Presets…	صادرات/وارد کردن تنظیمات از پیش تعیین شده…
++	Exported {n} swatch to {file}	{n} نمونه‌رنگ در {file} خروجی گرفته شد
++	Exported {path}	{path} صادر شد
++	Exported {path} ({size})	{path} ({size}) صادر شد
++	Exported contents to {path}	محتوای صادر شده به {path}
++	Exported presets to {path}	از پیش تنظیمات به {path} صادر شد
++	Exporting…	در حال صادرات…
++	Exposure	نوردهی
++	Exposure and Gamma	نوردهی و گاما
++	Exposure Program	برنامه نوردهی
++	Exposure:	نوردهی:
++	Exposure…	نوردهی…
++	Extend	تمدید کنید
++	Extensions	برنامه های افزودنی
++	Extra Bold	فوق العاده پررنگ
++	Extra large	فوق العاده بزرگ
++	Extra Large	فوق العاده بزرگ
++	Extra Light	نور اضافی
++	ExtraBold	فوق پررنگ
++	ExtraLight	فوق سبک
++	Extras	موارد اضافی
++	Extrude	اکسترود کردن
++	Extrude…	اکسترود کردن…
++	Eyedropper	قطره چشم
++	Eyedropper Tool	ابزار قطره‌چکان
++	Eyedroppers:	قطره چکان:
++	F	اف
++	F cycles the views; hold X to see the image	F نماها را چرخه می‌کند. X را نگه دارید تا تصویر را ببینید
++	Facet	جنبه
++	Factor:	عامل:
++	Fade	محو شدن
++	Fade steps	مراحل محو شدن
++	Fade…	کاهش شدت…
++	Faded Film	فیلم محو شده
++	Failed	شکست خورد
++	Failed to open file	فایل باز نشد
++	Failed to save file	فایل ذخیره نشد
++	fallback	بازگشتی
++	Fallback: {reason}	بازگشتی: {reason}
++	Fast	سریع
++	Faux Bold	جسور مصنوعی
++	Faux Italic	مورب مصنوعی
++	Feather	نرمی لبه
++	Feather Radius	شعاع نرمی لبه
++	Feather…	نرمی لبه…
++	Fewer Points	امتیاز کمتر
++	Fiber Length	طول فیبر
++	Fibers	الیاف
++	Fibers…	الیاف…
++	Field Blur	تاری فیلد
++	Field Blur…	تاری فیلد…
++	File	پرونده
++	File Format	فرمت فایل
++	File Handling	مدیریت فایل
++	File Handling…	مدیریت پرونده‌ها…
++	File Info	اطلاعات فایل
++	File Info…	اطلاعات پرونده…
++	File Name	نام فایل
++	File Naming	نام گذاری فایل
++	File not found	فایل پیدا نشد
++	File path	مسیر فایل
++	File Settings	تنظیمات فایل
++	File Size	اندازه فایل
++	Filename	نام فایل
++	Files	پرونده‌ها
++	Fill	پرشدگی
++	Fill color	رنگ پر کنید
++	Fill Color	رنگ را پر کنید
++	Fill Content	پر کردن محتوا
++	Fill Layer	لایه پر
++	Fill Light	نور را پر کنید
++	Fill new type layers with placeholder	لایه های نوع جدید را با مکان نگهدار پر کنید
++	Fill Opacity	Opacity را پر کنید
++	Fill Path	مسیر را پر کنید
++	Fill path with foreground color	مسیر را با رنگ پیش زمینه پر کنید
++	Fill Path…	پر کردن مسیر…
++	Fill Screen	پر کردن صفحه
++	Fill Settings	تنظیمات را پر کنید
++	Fill with {mode}-neutral color (50% gray)	پر کردن با رنگ {mode} - خنثی (50٪ خاکستری)
++	Fill with {mode}-neutral color (black)	پر کردن با رنگ {mode} - خنثی (سیاه)
++	Fill with {mode}-neutral color (white)	پر کردن با رنگ {mode} - خنثی (سفید)
++	Fill with Background Color	با رنگ پس زمینه پر کنید
++	Fill with Background Color, Preserve Transparency	با رنگ پس زمینه پر کنید، شفافیت را حفظ کنید
++	Fill with Foreground Color	با رنگ پیش زمینه پر کنید
++	Fill with Foreground Color, Preserve Transparency	با رنگ پیش زمینه پر کنید، شفافیت را حفظ کنید
++	Fill:	پرشدگی:
++	Fill…	پرشدگی…
++	Film & Video	فیلم و ویدیو
++	Film Grain	دانه فیلم
++	Filter	فیلتر
++	Filter for adjustment layers	فیلتر برای لایه های تنظیم
++	Filter for pixel layers	فیلتر برای لایه های پیکسل
++	Filter for shape layers	فیلتر برای لایه های شکل
++	Filter for smart objects	فیلتر برای اشیاء هوشمند
++	Filter for type layers	فیلتر برای لایه های نوع
++	Filter Gallery	گالری فیلتر
++	Filter Gallery…	گالری فیلتر…
++	Filter:	فیلتر:
++	Find	پیدا کنید
++	Find and Replace Text	یافتن و جایگزینی متن
++	Find and Replace Text…	یافتن و جایگزینی متن…
++	Find Edges	لبه ها را پیدا کنید
++	Find Layers	لایه ها را پیدا کنید
++	Fine	خوب
++	Fine Dots	نقطه های ظریف
++	Finger Painting	نقاشی با انگشت
++	Finish	پایان
++	First	اول
++	First Color Readout	اولین بازخوانی رنگ
++	First commit	نخستین ثبت
++	First Line Indent	تورفتگی خط اول
++	Fish	ماهی
++	Fisheye	چشم ماهی
++	Fit	مناسب
++	Fit Artboard on Screen	تخته هنری را روی صفحه قرار دهید
++	Fit Image	تصویر مناسب
++	Fit Image…	تصویر مناسب…
++	Fit in View	متناسب با نمای
++	Fit Layer(s) on Screen	برازش لایه(های) روی صفحه
++	Fit on Screen	مناسب روی صفحه نمایش
++	Fit Screen	اندازهٔ مناسب صفحه
++	Fit to Window	متناسب با پنجره
++	Fix the red plane first: its corners must form a convex quad	ابتدا صفحه قرمز را ثابت کنید: گوشه های آن باید یک چهارگوش محدب تشکیل دهند
++	Fixed	ثابت شد
++	Fixed Ratio	نسبت ثابت
++	Fixed Size	اندازه ثابت
++	Flag	پرچم
++	Flame	شعله
++	Flame Bottom Alignment	تراز پایین شعله
++	Flame Lines	خطوط شعله
++	Flame Shape	شکل شعله
++	Flame Style	سبک شعله
++	Flame Type	نوع شعله
++	Flame…	شعله…
++	Flash	فلش
++	Flat	تخت
++	Flat Shading	سایه زنی تخت
++	Flatten All Layer Effects	تخت کردن همهٔ جلوه‌های لایه
++	Flatten All Masks	اعمال همهٔ ماسک‌ها
++	Flatten Frames Into Clips	تخت کردن فریم‌ها در کلیپ‌ها
++	Flatten Frames Into Layers	تخت کردن فریم‌ها در لایه‌ها
++	Flatten Image	تخت کردن تصویر
++	Flip	تلنگر
++	Flip Canvas Horizontal	قرینهٔ افقی بوم
++	Flip Canvas Vertical	قرینهٔ عمودی بوم
++	Flip Horizontal	قرینهٔ افقی
++	Flip Vertical	قرینهٔ عمودی
++	Flip X	تلنگر X
++	Flip X Jitter	نوسان قرینه‌سازی افقی
++	Flip Y	تلنگر Y
++	Flip Y Jitter	نوسان قرینه‌سازی عمودی
++	Float All in Windows	شناور همه در ویندوز
++	Float in Window	شناور در پنجره
++	Float Panel	پانل شناور
++	Floating point	نقطه شناور
++	Flow	جریان
++	Flow Jitter	فلو جیتر
++	Flower Color	رنگ گل
++	Focal Distance	فاصله کانونی
++	Focal Length	فاصله کانونی
++	Focal Length35mm	فاصله کانونی 35 میلی متر
++	Focus	تمرکز کنید
++	Focus Area	منطقه فوکوس
++	Focus Area…	منطقه فوکوس…
++	Folder	پوشه
++	Follows only edges this close to the pointer ([ and ] change it)	فقط لبه های نزدیک به نشانگر را دنبال می‌کند ([و ] آن را تغییر دهید)
++	Font	فونت
++	Font preview	پیش‌نمایش فونت
++	Font Preview Size	اندازه پیش‌نمایش فونت
++	Font size	اندازه فونت
++	Font Size:	اندازه قلم:
++	Foreground	پیش‌زمینه
++	Foreground Color	رنگ پیش زمینه
++	Foreground Level	سطح پیش زمینه
++	Foreground to Background	پیش زمینه به پس زمینه
++	Foreground/Background Jitter	پیش زمینه / پس زمینه تحریک کننده
++	Format	قالب
++	Forward	به جلو
++	Forward Warp	تار به جلو
++	Fractions	کسری
++	Fragment	قطعه
++	Frame	قاب
++	Frame {current} / {total}	قاب {current} / {total}
++	Frame Duration	مدت زمان فریم
++	Frame from Layers	قاب از لایه ها
++	Frame from Layers…	قاب از لایه ها…
++	Frame Sync	همگام سازی قاب
++	Frame Tool	ابزار قاب
++	Free	رایگان
++	Free Transform	تبدیل آزاد
++	Free Transform a Copy	تبدیل آزاد یک کپی
++	Free Transform is still being applied; try again when it has finished.	تبدیل رایگان هنوز در حال اعمال است. وقتی تمام شد دوباره امتحان کنید
++	Free Transform Path	مسیر تبدیل رایگان
++	Freeform Pen Tool	ابزار قلم آزاد
++	Freeze Lasso	کمند فریز کنید
++	Freeze Lasso: drag to freeze an area, Alt-drag to thaw it (L)	Freeze Lasso: برای یخ زدن یک ناحیه بکشید، برای آب کردن آن Alt-drag کنید (L)
++	Freeze Mask	ماسک فریز
++	Frequency	فرکانس
++	Fresco	نقاشی دیواری
++	From	از
++	From Center	از مرکز
++	From Left	از سمت چپ
++	From Right	از سمت راست
++	From Transparency	از شفافیت
++	Front Image	تصویر جلو
++	Frosted	مات شده
++	Fuchsia	فوشیا
++	Full	کامل
++	Full Screen	تمام صفحه
++	Full Screen Mode	حالت تمام صفحه
++	Full Screen Mode With Menu Bar	حالت تمام صفحه با نوار منو
++	Full size tip	نکته سایز کامل
++	Full Spherical	کروی کامل
++	Full-resolution preview unavailable	پیش‌نمایش با وضوح کامل در دسترس نیست
++	Fullscreen	تمام صفحه
++	Functions	توابع
++	Fuzziness	مبهم بودن
++	Fuzziness:	مبهم بودن:
++	Gamma	گاما
++	Gamma Correction	تصحیح گاما
++	Gamma:	گاما:
++	Gamut Warning	هشدار گاموت
++	Gamut warning color	رنگ هشدار گاموت
++	Gamut warning opacity	کدورت هشدار گاموت
++	Gap	شکاف
++	Gaussian	گاوسی
++	Gaussian Blur	تاری گاوسی
++	Gaussian Blur…	تاری گاوسی…
++	General	عمومی
++	General Blend	ترکیب عمومی
++	General Blending	ترکیب عمومی
++	General Brushes	قلم‌مو های عمومی
++	General…	عمومی…
++	Generate	تولید
++	Generator enabled	ژنراتور فعال است
++	Generators	ژنراتورها
++	Generic	عمومی
++	Gif	گیف
++	GitHub	GitHub
++	Glass	شیشه ای
++	Global	جهانی
++	Global Light	نور جهانی
++	Global Light…	نور جهانی…
++	Gloss	براق
++	Gloss Contour	کانتور براق
++	Glossy	براق
++	Glow	درخشش
++	Glow Amount	مقدار درخشش
++	Glow Brightness	روشنایی درخشندگی
++	Glow Color	رنگ درخشش
++	Glow Size	اندازه درخشش
++	Glowing Edges	لبه های درخشان
++	Glyph	گلیف
++	Glyph Scaling	مقیاس گذاری گلیف
++	Glyphs	گلیف ها
++	Glyphs Panel	پانل گلیف
++	Go to Layer	به Layer بروید
++	Golden Ratio	نسبت طلایی
++	Golden Spiral	مارپیچ طلایی
++	Good	خوب
++	GPS	جی پی اس
++	GPU	پردازنده گرافیکی
++	GPU acceleration could not continue. Your documents are unchanged.	شتاب GPU نمی تواند ادامه یابد. مدارک شما بدون تغییر است.
++	GPU backend	باطن GPU
++	GPU Backend	موتور پردازش گرافیکی
++	GPU backend preference: {backend}	ترجیح پشتیبان GPU: {backend}
++	GPU device was lost; using the CPU renderer.	دستگاه GPU گم شد. با استفاده از رندر CPU
++	GPU error; using the CPU renderer.	خطای GPU؛ با استفاده از رندر CPU
++	GPU Memory (MB, 0 = Automatic)	حافظه GPU (مگابایت، 0 = خودکار)
++	GPU memory budget: {budget}	بودجه حافظه GPU: {budget}
++	GPU Memory Full	حافظه GPU پر است
++	GPU retry scheduled	تلاش مجدد GPU برنامه ریزی شده است
++	Grab bag	کیف بگیر
++	Grade Balance	تراز نمره
++	Grade Blending	ترکیب درجه
++	Grade Global	درجه جهانی
++	Grade Highlights	نکات برجسته درجه
++	Grade Midtones	درجه میانی
++	Grade Shadows	سایه های درجه
++	Gradient	طیف رنگ
++	Gradient Editor	ویرایشگر طیف رنگ
++	Gradient Map	نگاشت طیف رنگ
++	Gradient Map…	نگاشت طیف رنگ…
++	Gradient Options	گزینه‌های طیف رنگ
++	Gradient Overlay	روکش طیف رنگ
++	Gradient Overlay…	روکش طیف رنگ…
++	Gradient picker	انتخابگر طیف رنگ
++	Gradient Preset Options	گزینه‌های پیش‌تنظیم طیف رنگ
++	Gradient stops	نقطه‌های کنترل طیف رنگ
++	Gradient Tool	ابزار طیف رنگ
++	Gradient…	طیف رنگ…
++	gradients	طیف‌های رنگ
++	Gradients	طیف‌های رنگ
++	Grain	غلات
++	Grain Amount	مقدار دانه
++	Grain Roughness	زبری دانه
++	Grain Size	اندازه دانه
++	Grain Type	نوع دانه
++	Graininess	دانه بندی
++	Grainy Dots	نقاط دانه دار
++	Graphic and web	گرافیک و وب
++	Graphic and Web	گرافیک و وب
++	Graphic Pen	قلم گرافیکی
++	Graphics	گرافیک
++	Graphics adapter	آداپتور گرافیک
++	Graphics adapter: {adapter}	آداپتور گرافیک: {adapter}
++	gray	خاکستری
++	Gray	خاکستری
++	Gray Gamma 2.2	گامای خاکستری 2.2
++	Gray Value (Maximum)	مقدار خاکستری (حداکثر)
++	Gray Value (Mean)	مقدار خاکستری (میانگین)
++	Gray Value (Median)	مقدار خاکستری (متوسط)
++	Gray Value (Minimum)	مقدار خاکستری (حداقل)
++	Gray-gamma-2.2	خاکستری-گاما-2.2
++	Gray:	خاکستری:
++	Grayscale	خاکستری
++	Grayscale Slider	لغزنده مقیاس خاکستری
++	Greek	یونانی
++	green	سبز
++	Green	سبز
++	Greens	سبزها
++	Grid	شبکه
++	Grid  (⌘')	شبکه (⌘')
++	Grid color	رنگ شبکه
++	Grid colors	رنگ های شبکه ای
++	Grid size	اندازه شبکه
++	Grid Size:	اندازه شبکه:
++	Grid style	سبک شبکه
++	Grid unit	واحد شبکه
++	Grid view	نمای شبکه ای
++	Grid:	شبکه:
++	Gridline every	فاصلهٔ خطوط شبکه
++	Group	گروه
++	Group · {n} layer	گروه · {n} لایه
++	Group from Layers	گروه از لایه ها
++	Group from Layers…	گروه از لایه ها…
++	Group Layer	لایه گروهی
++	Group Layers	گروه‌بندی لایه‌ها
++	Group name	نام گروه
++	Group with	گروه با
++	Group…	گروه…
++	Groups	گروه ها
++	Grout Width	عرض دوغاب
++	Grow	رشد کنید
++	Guide color	رنگ راهنما
++	Guide Layout…	چیدمان راهنما…
++	Guide style	سبک راهنما
++	Guides	راهنماها
++	Guides, Grid & Slices	راهنماها، شبکه و قطعه‌ها
++	Guides, Grid & Slices…	راهنماها، شبکه و قطعه‌ها…
++	Gutter	ناودان
++	H	اچ
++	Half Round	نیم دور
++	Halftone Pattern	الگوی نیم تن
++	Hand	دست
++	Hand Tool	ابزار دست
++	Hand Tool (hold)	ابزار دستی (نگه داشتن)
++	Hanging Punctuation	نشانه گذاری آویزان
++	Hard	سخت
++	Hard Light	نور سخت
++	Hard Mix	مخلوط سخت
++	Hardness	سختی
++	Hardness:	سختی:
++	HDR Toning	تونینگ HDR
++	HDR Toning…	تونینگ HDR…
++	HDTV (Rec. 709)	HDTV (Rec. 709)
++	HDV 1080/DVCPRO HD 720 (1.33)	HDV 1080/DVCPRO HD 720 (1.33)
++	Heal	شفا بده
++	Heal Auto	ترمیم خودکار
++	Heal Color	رنگ شفا بخش
++	Heal Off	شفا خاموش
++	Heal On	شفا در
++	Healing	ترمیم
++	Healing Brush	قلم‌موی ترمیم
++	Healing Brush Tool	قلم‌موی ترمیم
++	Heart	قلب
++	Hearts	قلب ها
++	Height	ارتفاع
++	Height:	ارتفاع:
++	Help	راهنما
++	Heptagon	هفت ضلعی
++	Hexagon	شش ضلعی
++	Hidden	پنهان شده است
++	Hidden Layers	لایه های پنهان
++	Hide	پنهان کردن
++	Hide {app}	پنهان کردن {app}
++	Hide All	پنهان کردن همه
++	Hide All Effects	پنهان کردن همه جلوه ها
++	Hide Auto Slices	مخفی کردن برش های خودکار
++	Hide Grid	پنهان کردن شبکه
++	Hide Layers	پنهان کردن لایه ها
++	Hide Others	پنهان کردن دیگران
++	Hide Properties	مخفی کردن ویژگی ها
++	Hide Selection	مخفی کردن انتخاب
++	Hide the layer's effects  ({key}-click: all layers)	جلوه های لایه را مخفی کنید ({key}-click: all layers)
++	Hide the layer's effects  (⌥-click: all layers)	پنهان کردن جلوه های لایه (⌥-کلیک کنید: همه لایه ها)
++	High	بالا
++	High Pass	گذرگاه بالا
++	High Pass…	گذرگاه بالا…
++	Higher values follow only edges that contrast sharply with their surroundings	مقادیر بالاتر فقط از لبه هایی پیروی می کنند که به شدت با محیط اطرافشان تضاد دارند
++	Highlight	برجسته کردن
++	Highlight Amount	مقدار را برجسته کنید
++	Highlight Area	منطقه برجسته
++	Highlight Clipping Warning (O)	هشدار برش برجسته (O)
++	Highlight Compression	هایلایت فشرده سازی
++	Highlight Priority	اولویت را برجسته کنید
++	Highlight Radius	رادیوس را برجسته کنید
++	Highlight Strength	قدرت را برجسته کنید
++	Highlight Tone	هایلایت تن
++	Highlights	بخش‌های روشن
++	Highlights from:	نکات برجسته از:
++	Histogram	هیستوگرام
++	Histories	تاریخچه‌ها
++	History	تاریخچه
++	History Brush	قلم‌مو تاریخچه
++	History Brush Tool	ابزار قلم‌موی تاریخچه
++	History Log	گزارش تاریخچه
++	History Log…	گزارش تاریخچه…
++	History states	تاریخ بیان می‌کند
++	Hold Alt while drawing for straight segments	Alt را در حین طراحی برای بخش های مستقیم نگه دارید
++	Home	صفحه اصلی
++	Horizontal	افقی
++	Horizontal Centers	مراکز افقی
++	Horizontal Distortion	اعوجاج افقی
++	Horizontal Only	فقط افقی
++	Horizontal scale	مقیاس افقی
++	Horizontal type	نوع افقی
++	Horizontal Type Mask Tool	ابزار ماسک نوع افقی
++	Horizontal Type Tool	ابزار نوع افقی
++	Horizontally	به صورت افقی
++	Hotspot	هات اسپات
++	How often fastening points are placed by themselves	هر چند وقت یکبار نقاط بست به خودی خود قرار می گیرند
++	Hsb	Hsb
++	HSB Color	رنگ HSB
++	HSB/HSL	HSB/HSL
++	Hsl	Hsl
++	Hsl Hue	فام HSL
++	Hsl Lum	روشنایی HSL
++	Hsl Sat	اشباع HSL
++	HSL/Grayscale	HSL / مقیاس خاکستری
++	Hue	فام
++	Hue Jitter	هیو جیتر
++	Hue/Saturation	رنگ/اشباع
++	Hue/Saturation…	فام و اشباع…
++	Huge	عظیم
++	Humidity	رطوبت
++	Hyphenate	خط فاصله
++	ICO is limited to 256 × 256 pixels	ICO به 256 × 256 پیکسل محدود شده است
++	Ignore	نادیده گرفتن
++	Ignore All	نادیده گرفتن همه
++	Ignore exif profile tag	تگ نمایه exif را نادیده بگیرید
++	Image	تصویر
++	Image Assets	دارایی های تصویری
++	Image Balance	تعادل تصویر
++	Image compositor: {processor}	سازنده تصویر: {processor}
++	image file path	مسیر فایل تصویری
++	Image interpolation	درون یابی تصویر
++	Image previews	پیش‌نمایش تصویر
++	Image Processor	پردازشگر تصویر
++	Image Processor…	پردازشگر تصویر…
++	Image Rotation	چرخش تصویر
++	Image Size	اندازه تصویر
++	Image Size:	اندازه تصویر:
++	Image Size…	اندازهٔ تصویر…
++	Import	ورود
++	Import .GRD	واردات .GRD
++	Import Brush from Image…	وارد کردن قلم‌مو از تصویر…
++	Import Brushes	واردات برس
++	Import brushes (.abr)	برس های وارداتی (.abr)
++	Import Brushes…	واردات برس…
++	Import Brushes… (.abr or image)	وارد کردن قلم‌مو… (.abr یا تصویر)
++	Import Brushes… (.abr)	واردات قلم‌مو… (.abr)
++	Import Image	وارد کردن تصویر
++	Import keyboard shortcuts?	میانبرهای صفحه کلید وارد شود؟
++	Import Options	گزینه های واردات
++	Import Photoshop brushes (.abr)	وارد کردن قلم‌مو های فتوشاپ (.abr)
++	Import Presets	وارد کردن تنظیمات از پیش تعیین شده
++	Import Settings	تنظیمات واردات
++	Import Shortcuts…	وارد کردن میانبرها…
++	Import Swatches…	واردات نمونه…
++	Import…	ورود…
++	Imported	وارداتی
++	Imported {n} brush from {file}	{n} قلم‌مو از {file} وارد شد
++	Imported {n} brush from {group}	{n} قلم‌مو از {group} وارد شد
++	Imported {n} gradient from {file}	{n} طیف رنگ از {file} وارد شد
++	Imported {n} pattern from {file}	{n} الگو از {file} وارد شد
++	Imported {n} shortcuts from {file}. Click OK to keep them.	میانبرهای {n} از {file} وارد شد. برای حفظ آنها روی OK کلیک کنید.
++	Imported {n} swatch from {file}	{n} نمونه‌رنگ از {file} وارد شد
++	Importing {what} from {file}…	در حال وارد کردن {what} از {file}…
++	Importing…	در حال واردات…
++	Impressionist	امپرسیونیست
++	In	در
++	In Black	در رنگ مشکی
++	In White	در رنگ سفید
++	Inches	اینچ
++	Include All Subfolders	شامل همه زیرپوشه ها
++	Include Color	شامل رنگ
++	Include ICC Profile	نمایه ICC را درج کنید
++	Include in playback	شامل در پخش
++	Include Tool Settings	شامل تنظیمات ابزار
++	Including layers will increase file size.	گنجاندن لایه ها باعث افزایش حجم فایل می‌شود.
++	Increase Brush Hardness	سختی برس را افزایش دهید
++	Increase Brush Size	افزایش سایز برس
++	Increase Type Size	اندازه نوع را افزایش دهید
++	Increase Type Size by 10	اندازه نوع را 10 افزایش دهید
++	Indent First	تورفتگی اول
++	Indent first line	تورفتگی خط اول
++	Indent Left	تورفتگی سمت چپ
++	Indent left margin	تورفتگی حاشیه سمت چپ
++	Indent Right	تورفتگی سمت راست
++	Indent right margin	تورفتگی حاشیه سمت راست
++	Indexed	نمایه شده است
++	Indexed Color	رنگ نمایه‌ای
++	Indexed Color…	رنگ نمایه‌ای…
++	Indicates	نشان می دهد
++	Indigo	نیل
++	Industry Standard	استاندارد صنعت
++	Infinite	بی نهایت
++	Inflate	باد کردن
++	Info	اطلاعات
++	Info Options…	گزینه های اطلاعات…
++	Information	اطلاعات
++	Initial Direction	جهت اولیه
++	Initial Direction of Stroke	جهت اولیهٔ حرکت قلم‌مو
++	Ink Characteristics	ویژگی‌های جوهر
++	Ink Outlines	رئوس مطالب جوهر
++	Inner Bevel	اریب داخلی
++	Inner Glow	درخشش داخلی
++	Inner Glow…	درخشش داخلی…
++	Inner Shadow	سایهٔ داخلی
++	Inner Shadow…	سایهٔ داخلی…
++	Input	ورودی
++	Input Levels	سطوح ورودی
++	Input Mode	حالت ورودی
++	Input:	ورودی:
++	Insert Blank Frame	قاب خالی را درج کنید
++	Insert Stop…	درج توقف…
++	Inside	داخل
++	Install Plug-in	Plug-in را نصب کنید
++	Install Plug-in…	نصب افزونه…
++	Integer	عدد صحیح
++	Integrated Density	چگالی یکپارچه
++	Integrations	یکپارچه‌سازی‌ها
++	Integrations…	یکپارچه‌سازی‌ها…
++	Intensity	شدت
++	Intent	قصد
++	Interface	رابط کاربری
++	Interface…	رابط کاربری…
++	Interlaced	درهم آمیخته
++	Internet Standard RGB	اینترنت استاندارد RGB
++	Interpolation	درون یابی
++	Interpolation:	درون یابی:
++	Interpret Footage	فیلم را تفسیر کنید
++	Interpret Footage…	تفسیر فیلم…
++	Intersect Mask with Selection	تقاطع ماسک با انتخاب
++	Intersect Shape Areas	مناطق شکل متقاطع
++	Intersect with	تقاطع با
++	Intersect with selection  ({key})	تقاطع با انتخاب ({key})
++	Intersect with selection  (⇧⌥)	تقاطع با انتخاب (⇧⌥)
++	Interval	فاصله
++	Invalid {mode} profile	نمایه {mode} نامعتبر است
++	Invalid delete command	دستور حذف نامعتبر است
++	Invalid guide layout	طرح راهنما نامعتبر است
++	Invalid panel layout; restored the default dock	طرح بندی پانل نامعتبر است. داک پیش فرض را بازیابی کرد
++	Inverse	معکوس انتخاب
++	Inverse Selection	انتخاب معکوس
++	Invert	معکوس کردن
++	Invert All	معکوس کردن همه
++	Invert has no settings.	Invert هیچ تنظیماتی ندارد.
++	Invert Mask	ماسک معکوس
++	Invert Selection	انتخاب معکوس
++	Invert…	معکوس کردن…
++	Iris Blur	تاری عنبیه‌ای
++	Iris Blur…	تاری عنبیه‌ای…
++	ISO	ISO
++	ISO Speed	سرعت ISO
++	Isolate Layers	جداسازی لایه ها
++	Italic	کج
++	Its layers need {needed} of GPU memory; the budget leaves them {budget}.	لایه های آن به حافظه GPU {needed} نیاز دارند. بودجه آنها را ترک می‌کند {budget}.
++	Ivy	پیچک
++	Jag	جگ
++	Join the ArtCraft Discord	به ArtCraft Discord بپیوندید
++	Join the ArtCraft Discord ({url})	به ArtCraft Discord بپیوندید ({url})
++	Join the ArtCraft Discord…	به ArtCraft Discord بپیوندید…
++	Join us on Discord	در Discord به ما بپیوندید
++	Jpeg quality	کیفیت Jpeg
++	Jpg	Jpg
++	Justification	توجیه
++	Justify	توجیه کنید
++	Justify all	همه را توجیه کنید
++	Justify last centered	آخرین وسط را توجیه کنید
++	Justify last left	آخرین سمت چپ را توجیه کنید
++	Justify last right	راست آخر را توجیه کنید
++	Keep proportions	نسبت ها را حفظ کنید
++	Keep this tab open to retain your brushes.	این زبانه را باز نگه دارید تا برس های خود را حفظ کنید.
++	Keep Using CPU	به استفاده از CPU ادامه دهید
++	Keep view in sync	مشاهده را همگام نگه دارید
++	Keeps the current texture when switching presets.	هنگام تعویض تنظیمات از پیش تعیین شده، بافت فعلی را حفظ می‌کند.
++	Kernel	هسته
++	Kerning	کرنینگ
++	Kerning: Metrics, Optical or a value in 1/1000 em (Alt+←/→ at the caret)	Kerning: متریک، نوری یا یک مقدار در 1/1000 em (Alt+←/→ در جعبه)
++	Keyboard	صفحه کلید
++	Keyboard Shortcuts	میانبرهای صفحه کلید
++	Keyboard Shortcuts and Menus	میانبرها و منوهای صفحه کلید
++	Keyboard shortcuts imported	میانبرهای صفحه کلید وارد شد
++	Keyboard Shortcuts…	میان‌برهای صفحه‌کلید…
++	Keywords	کلمات کلیدی
++	Kind	نوع
++	Knockout	ناک اوت
++	Kurtosis	کورتوز
++	Lab	آزمایشگاه
++	Lab Color	رنگ Lab
++	Label	برچسب بزنید
++	Label Size	اندازه برچسب
++	Labels	برچسب ها
++	Lanczos (sharp)	Lanczos (تیز)
++	Landscape	چشم انداز
++	Landscape, 10 x 8	منظره، 10×8
++	Landscape, 6 x 4	منظره، 6 × 4
++	Landscape, 7 x 5	منظره، 7×5
++	Language	زبان
++	Language Options	گزینه‌های زبان
++	Large	بزرگ
++	Large document: redrawing on the CPU	سند بزرگ: طراحی مجدد روی CPU
++	Large tabs	زبانه های بزرگ
++	Lasso	کمند
++	Lasso around an area, then drag the selection	دور یک منطقه کمند کنید، سپس انتخاب را بکشید
++	Lasso Tool	ابزار کمند
++	Last	آخرین
++	Last commit	آخرین تعهد
++	Last Document State	آخرین وضعیت سند
++	Last Filter	آخرین فیلتر
++	Last Modified	آخرین اصلاح
++	Latin 1	لاتین 1
++	Latin Extended-A	لاتین Extended-A
++	Latin Extended-B	لاتین Extended-B
++	Layer	لایه
++	Layer Comp	لایه Comp
++	Layer Comps	لایه Comps
++	Layer Comps to Files	ترکیب لایه ها با فایل ها
++	Layer Comps to Files…	ترکیب لایه ها با فایل ها…
++	Layer Content Options	گزینه های محتوای لایه
++	Layer Content Options…	گزینه های محتوای لایه…
++	Layer Count	تعداد لایه ها
++	Layer deleted, but confirmation preference could not be saved: {error}	لایه حذف شد، اما اولویت تأیید ذخیره نشد: {error}
++	Layer Edges	لبه های لایه
++	Layer from Background	لایه از پس زمینه
++	Layer From Background	لایه از پس زمینه
++	Layer from Background…	لایه از پس زمینه…
++	Layer From Background…	لایه از پس زمینه…
++	Layer Knocks Out Drop Shadow	لایه قطره سایه را از بین می برد
++	layer mask	ماسک لایه
++	Layer Mask	ماسک لایه
++	Layer Mask Hides Effects	لایه ماسک جلوه ها را پنهان می‌کند
++	Layer Properties	ویژگی های لایه
++	Layer Style	سبک لایه
++	Layer Styles	سبک های لایه
++	Layer via Copy	لایه گذاری از طریق کپی
++	Layer via Cut	لایه گذاری از طریق برش
++	Layer…	لایه…
++	Layers	لایه‌ها
++	Layers to Files	لایه ها به فایل ها
++	Layers to Files…	لایه ها به فایل ها…
++	Layout	طرح بندی
++	Leading	پیشرو
++	Leading (set to the font size × auto-leading when Auto)	پیشرو (تنظیم به اندازه قلم × به صورت خودکار در حالت خودکار)
++	Leaf Color	رنگ برگ
++	Learn	آموزش
++	Learn More	بیشتر بدانید
++	Leave as is (don't color manage)	همانطور که هست بگذارید (رنگ را مدیریت نکنید)
++	Leave empty for automatic size	برای اندازه خودکار خالی بگذارید
++	Leaves Amount	مقدار برگ
++	Leaves Color	رنگ برگ
++	Leaves Size	اندازه برگ
++	Left	چپ
++	Left align text	متن تراز چپ
++	Left Diagonal	مورب سمت چپ
++	Left Edges	لبه های چپ
++	Left:	چپ:
++	Legacy	میراث
++	Legacy compositing	ترکیب میراث
++	Legacy Macintosh RGB	Macintosh RGB قدیمی
++	Legal	قانونی
++	Length	طول
++	Length:	طول:
++	Lens	لنز
++	Lens Blur	تاری لنز
++	Lens Blur…	تاری لنز…
++	Lens Correction	تصحیح لنز
++	Lens Correction…	تصحیح لنز…
++	Lens Corrections	اصلاحات لنز
++	Lens Flare	شعله ور شدن لنز
++	Lens Flare…	شعله ور شدن لنز…
++	Lens Info	اطلاعات لنز
++	Less	کمتر
++	Letter	نامه
++	Letter Spacing	فاصله حروف
++	Level	سطح
++	Level Based	بر اساس سطح
++	Levels	سطوح
++	Levels…	سطوح…
++	Libraries	کتابخانه‌ها
++	Library	کتابخانه
++	Ligature	لیگاتور
++	Light	نور
++	Light Blue	آبی روشن
++	Light Dark Balance	تعادل تاریکی روشن
++	Light Direction	جهت نور
++	Light gray	خاکستری روشن
++	Light Gray	خاکستری روشن
++	Light Intensity	شدت نور
++	Light Red	قرمز روشن
++	Light Rough	خشن سبک
++	Light Source	منبع نور
++	Light Theme	پوستهٔ روشن
++	Light Type	نوع نور
++	Light X	نور X
++	Light Y	نور Y
++	Light Z	نور Z
++	Lighten	روشن‌تر
++	Lighten Grout	گروت را روشن کنید
++	Lighten Interface	رابط کاربری را روشن کنید
++	Lighten Only	فقط روشن کنید
++	Lighter Color	رنگ روشن تر
++	Lighting	نورپردازی
++	Lighting Effects	جلوه های نورپردازی
++	Lighting Effects…	جلوه های نور…
++	Lightness	سبکی
++	Lights	تون‌های روشن
++	Limit Playback	محدود کردن پخش
++	Limits:	محدودیت ها:
++	Line	خط
++	Line delta	خط دلتا
++	Line Tool	ابزار خط
++	Linear	خطی
++	Linear Burn	سوختگی خطی
++	Linear Dodge	دوج خطی
++	Linear Dodge (Add)	Dodge خطی (افزودن)
++	Linear Gradient	گرادیان خطی
++	Linear Height	ارتفاع خطی
++	Linear Light	نور خطی
++	Linear-srgb	خطی-srgb
++	Lines	خطوط
++	Lines +/−	خطوط +/-
++	Lines added	خطوط اضافه شد
++	Lines deleted	خطوط حذف شد
++	Link	پیوند
++	Link Layer Mask	ماسک لایه پیوند
++	Link layers	پیوند لایه ها
++	Link Layers	لایه های پیوند
++	Link radii	شعاع پیوند
++	Link the mask to the layer	ماسک را به لایه پیوند دهید
++	Link Vector Mask	ماسک وکتور لینک
++	Link width and height	عرض و ارتفاع پیوند
++	Link with Layer	پیوند با لایه
++	Linux display server	سرور نمایش لینوکس
++	Liquify	تغییر شکل سیال
++	Liquify is not open	پنجرهٔ تغییر شکل سیال باز نیست
++	Liquify…	تغییر شکل سیال…
++	List	فهرست کنید
++	List view	نمای فهرستی
++	Live Preview	پیش‌نمایش زنده
++	Load	بارگذاری کنید
++	Load 3D LUT	LUT سه بعدی را بارگذاری کنید
++	Load 3D LUT…	بارگذاری 3D LUT…
++	Load a keyboard shortcut set saved as .kys	یک مجموعه میانبر صفحه کلید ذخیره شده به عنوان .kys را بارگیری کنید
++	Load Actions…	بارگیری اقدامات…
++	Load channel as selection	بارگذاری کانال به عنوان انتخاب
++	Load Default Type Styles	بارگذاری سبک های نوع پیش فرض
++	Load Files into Stack	فایل ها را در پشته بارگذاری کنید
++	Load Files into Stack…	بارگذاری پرونده‌ها در پشته…
++	Load path as a selection	بارگذاری مسیر به عنوان یک انتخاب
++	Load Selection	انتخاب بارگذاری
++	Load Selection…	بارگذاری انتخاب…
++	Load settings from a Camera Raw .xmp file	تنظیمات را از فایل Camera Raw .xmp بارگیری کنید
++	Load Settings…	بارگیری تنظیمات…
++	Load…	بارگیری…
++	Loaded {n} action from {file}	{n} عملیات از {file} بارگذاری شد
++	Loaded Camera Raw settings from {file}	تنظیمات Camera Raw را از {file} بارگیری کرد
++	Loaded Camera Raw settings from {file} ({n} not supported)	تنظیمات Camera Raw بارگیری شده از {file} ({n} پشتیبانی نمی‌شود)
++	Loading fonts…	در حال بارگیری فونت ها…
++	Loading…	در حال بارگیری…
++	Localize Color Clusters	بومی سازی خوشه های رنگی
++	Localized Color Clusters	خوشه های رنگی محلی
++	Location	مکان
++	Location:	مکان:
++	Lock	قفل
++	Lock all	همه را قفل کنید
++	Lock All	قفل همه
++	Lock Guides	راهنماهای قفل
++	Lock image pixels	قفل کردن پیکسل های تصویر
++	Lock Image Pixels	قفل پیکسل‌های تصویر
++	Lock layer	لایه قفل
++	Lock Layers	لایه های قفل
++	Lock Layers…	لایه های قفل …
++	Lock position	موقعیت قفل
++	Lock Position	قفل موقعیت
++	Lock Slices	قفل برش ها
++	Lock transparent pixels	قفل کردن پیکسل های شفاف
++	Lock Transparent Pixels	قفل پیکسل‌های شفاف
++	Lock Workspace	قفل کردن فضای کاری
++	Lock:	قفل:
++	Lock: keep these settings when picking another preset	قفل: این تنظیمات را هنگام انتخاب از پیش تعیین شده دیگر حفظ کنید
++	Locked	قفل شده است
++	Log Errors To File	ورود خطاها به فایل
++	Logical Length:	طول منطقی:
++	Logical Units:	واحدهای منطقی:
++	Long Lines	خطوط طولانی
++	Long Strokes	حرکت‌های بلند قلم‌مو
++	Loop	حلقه
++	Lorem Ipsum	لورم ایپسوم
++	Lossless	بدون ضرر
++	Low	کم
++	Low resolution previews	پیش‌نمایش با وضوح پایین
++	Low-Latency Drawing (vsync off, applies at next launch)	طراحی با تأخیر کم (vsync خاموش، در راه اندازی بعدی اعمال می‌شود)
++	Lower	پایین تر
++	Lowercase extension	پسوند حروف کوچک
++	Lum	لوم
++	Luminance	درخشندگی
++	Luminance Contrast	کنتراست درخشندگی
++	Luminance Detail	جزئیات درخشندگی
++	Luminance Smoothness	صافی درخشندگی
++	Luminosity	درخشندگی
++	Lut	لوت
++	Mac Crisp	مک کریسپ
++	Mac LCD	مک ال سی دی
++	Mac OS	سیستم عامل مک
++	Mac Sharp	مک شارپ
++	Mac Smooth	مک صاف
++	Mac Strong	مک استرانگ
++	Magenta	سرخابی
++	Magenta  ·  Green	سرخابی · سبز
++	Magentas	سرخابی ها
++	Magic Eraser Tool	ابزار پاک کن جادویی
++	Magic Wand Tool	ابزار عصای جادویی
++	Magnetic Lasso	کمند مغناطیسی
++	Magnetic Lasso Tool	کمند مغناطیسی
++	Maintain aspect ratio	نسبت تصویر را حفظ کنید
++	Make	بسازید
++	Make Default	به طور پیش فرض
++	Make Landscape	منظره بسازید
++	Make Portrait	پرتره بسازید
++	Make Selection	انتخاب کنید
++	Make Selection from Path	از مسیر انتخاب کنید
++	Make Selection…	انتخاب کنید…
++	Make Symmetry Path	مسیر تقارن را بسازید
++	Make Work Path	مسیر کار را بسازید
++	Make work path from selection	مسیر کار را از انتخاب ایجاد کنید
++	Make Work Path…	ایجاد مسیر کاری…
++	Manage submitted jobs in the system print queue	کارهای ارسالی را در صف چاپ سیستم مدیریت کنید
++	manual	کتابچه راهنمای کاربر
++	Manual	دستی
++	Map Document	سند نقشه
++	Map Layer	لایه نقشه
++	Map Path	مسیر نقشه
++	Marching Ants	مورچه های راهپیمایی
++	Margin	حاشیه
++	Marker Size	اندازه نشانگر
++	Marquee	خیمه شب بازی
++	Mask	ماسک
++	Mask All	همه را بپوشانید
++	Mask All Objects	همه اشیا را ماسک کنید
++	Mask Channel	کانال ماسک
++	Mask Incomplete Blocks	بلوک های ناقص را بپوشانید
++	Mask None	ماسک هیچ
++	Mask Options	گزینه های ماسک
++	Masked Areas	مناطق نقاب دار
++	Masking	ماسک‌گذاری
++	Masks	ماسک ها
++	Master	استاد
++	Match All	مطابقت با همه
++	Match Canvas	مطابقت با بوم
++	Match Color	رنگ مطابقت
++	Match Color…	تطبیق رنگ…
++	Match Location	مکان مطابقت
++	Match Rotation	چرخش مسابقه
++	Match Zoom	مطابقت زوم
++	Math Symbols	نمادهای ریاضی
++	Matte	مات
++	Matting	تشک
++	Max Offset	حداکثر افست
++	Max Radius	حداکثر شعاع
++	Maximize	بیشینه کردن
++	Maximize psd compatibility	سازگاری psd را به حداکثر برسانید
++	Maximum	حداکثر
++	Maximum…	حداکثر…
++	Mean	میانگین
++	Mean:	میانگین:
++	Measure	اندازه گیری کنید
++	Measurement Log	گزارش اندازه گیری
++	Measurement Scale	مقیاس اندازه گیری
++	Measurement Scale Marker	نشانگر مقیاس اندازه گیری
++	Median	میانه
++	Median:	میانه:
++	Median…	میانه…
++	Medium	متوسط
++	Medium Blue	آبی متوسط
++	Medium Dots	نقطه های متوسط
++	Medium gray	خاکستری متوسط
++	Medium Gray	خاکستری متوسط
++	Medium Lines	خطوط متوسط
++	Medium Strokes	ضربات متوسط
++	Memory usage mb	استفاده از حافظه mb
++	Menus	منوها
++	Menus…	منوها…
++	Merge Channels…	ادغام کانال ها…
++	Merge Down	ادغام با لایهٔ پایین
++	Merge Group	ادغام گروه
++	Merge Layers	ادغام لایه‌ها
++	Merge Shape Components	ادغام اجزای شکل
++	Merge Spot Channel	ادغام کانال رنگ اختصاصی
++	Merge to HDR Pro	ادغام در HDR Pro
++	Merge to HDR Pro…	ادغام در HDR Pro…
++	Merge Visible	ادغام لایه‌های نمایان
++	Merged PRs	درخواست‌های ادغام پذیرفته‌شده
++	Mesh	مش
++	Mesh Size	اندازه مش
++	Message:	پیام:
++	Metadata	فراداده
++	Metal	فلز
++	Metallic	فلزی
++	Metering Mode	حالت اندازه گیری
++	Method	روش
++	Metrics	معیارها
++	Mezzotint	مزوتنت
++	Mezzotint…	مزوتنت…
++	Middle	وسط
++	Middle Eastern & South Asian Composer	آهنگساز خاورمیانه و جنوب آسیا
++	Middle Eastern Features	ویژگی های خاورمیانه
++	Midpoint	نقطه میانی
++	Midtone	آهنگ میانی
++	Midtones	تون‌های میانی
++	Midtones from:	آهنگ های میانی از:
++	Midtones to:	آهنگ های میانی به:
++	Migrate Presets	انتقال تنظیمات از پیش تعیین شده
++	Millimeters	میلی متر
++	Minimalistic	مینیمالیست
++	Minimize	کمینه کردن
++	Minimum	حداقل
++	Minimum Depth	حداقل عمق
++	Minimum Diameter	حداقل قطر
++	Minimum Roundness	حداقل گرد بودن
++	Minimum…	حداقل…
++	Mirror	آینه
++	Missing delete command	دستور حذف وجود ندارد
++	Missing glyph protection	محافظت از گلیف وجود ندارد
++	Missing Profiles: Ask When Opening	نمایه‌های گمشده: هنگام باز کردن سؤال شود
++	Miter	میتر
++	Miter limit	حد میتر
++	Mix	مخلوط کنید
++	Mix Jitter	جیتر را مخلوط کنید
++	Mixer Brush	برس میکسر
++	Mixer Brush Tool	ابزار قلم‌مو میکسر
++	Mobile	موبایل
++	Mode	حالت
++	Mode:	حالت:
++	Model	مدل
++	Models	مدل ها
++	Modern	مدرن
++	modified	اصلاح شده است
++	Modifier Keys	کلیدهای اصلاح کننده
++	Modify	اصلاح
++	Modify Date	تغییر تاریخ
++	Monitor Profile	نمایه مانیتور
++	Monitor profile in use on {display}: {profile}	نظارت بر نمایه در حال استفاده در {display}: {profile}
++	Monitor profile in use: {profile}	نظارت بر نمایه در حال استفاده: {profile}
++	Monitor profile on {display} (main window): {profile}	نظارت بر نمایه در {display} (پنجره اصلی): {profile}
++	Monitor profile on {display}: {profile}	نظارت بر نمایه در {display}: {profile}
++	Monitor profile: {profile}	نمایه مانیتور: {profile}
++	Monitor RGB	مانیتور RGB
++	Mono Contrast	مونو کنتراست
++	Monochromatic	تک رنگ
++	Monochrome	تک رنگ
++	More	بیشتر
++	More documents	اسناد بیشتر
++	More panels	پانل های بیشتر
++	More Points	امتیاز بیشتر
++	Mosaic	موزاییک
++	Mosaic Tiles	کاشی موزاییک
++	Mosaic…	موزاییک…
++	Motion	حرکت
++	Motion Blur	تاری حرکت
++	Motion Blur…	تاری حرکتی…
++	Mouse	موش
++	Mouse Controls	کنترل های ماوس
++	Mouse Coordinates	مختصات ماوس
++	Move	حرکت کنید
++	Move effect layer down	لایه افکت را به پایین منتقل کنید
++	Move effect layer up	لایه افکت را به بالا منتقل کنید
++	Move Group Down	حرکت گروه به پایین
++	Move Group Up	حرکت گروه به بالا
++	Move Layer	حرکت لایه
++	Move Panel	حرکت پانل
++	Move to	حرکت به
++	Move Tool	ابزار جابه‌جایی
++	Movie Prime	فیلم پرایم
++	Multichannel	چندکاناله
++	Multiple Flames Along Path	شعله های آتش چندگانه در طول مسیر
++	Multiple Flames One Direction	شعله های متعدد در یک جهت
++	Multiple Flames Path Directions	مسیرهای شعله های چندگانه
++	Multiple Flames Various Length	شعله های چندگانه با طول های مختلف
++	Multiply	ضرب
++	My Brushes	برس های من
++	name	نام
++	Name	نام
++	Name (A–Z)	نام (A–Z)
++	Name:	نام:
++	Native file drag-and-drop is not supported on Wayland yet. Use File › Open, or copy the image in your file manager and paste it with {paste}.	کشیدن و رها کردن فایل بومی هنوز در Wayland پشتیبانی نمی‌شود. از File › Open استفاده کنید یا تصویر را در مدیریت فایل خود کپی کنید و آن را با {paste} جایگذاری کنید.
++	Native file drag-and-drop is not supported on Wayland yet. Use File › Open, or run PhotoCraft under XWayland with `WAYLAND_DISPLAY= photocraft`.	کشیدن و رها کردن فایل بومی هنوز در Wayland پشتیبانی نمی‌شود. از File › Open استفاده کنید یا PhotoCraft را در XWayland با «WAYLAND_DISPLAY= photocraft» اجرا کنید.
++	Native file drag-and-drop is unavailable	کشیدن و رها کردن فایل اصلی در دسترس نیست
++	Navigator	ناوبری
++	Nearest	نزدیکترین
++	Nearest neighbor	نزدیکترین همسایه
++	Nearest Neighbor	نزدیکترین همسایه
++	Nearest Neighbor (hard edges)	نزدیکترین همسایه (لبه های سخت)
++	Negation	نفی
++	Neon Glow	درخشش نئون
++	Neutralize	خنثی کردن
++	Neutrals	خنثی ها
++	Never	هرگز
++	Never Show Overlay	هرگز همپوشانی نشان داده نشود
++	new	جدید
++	New	جدید
++	New Adjustment Layer	لایه تنظیم جدید
++	New Blank Video Layer	لایه ویدیوی خالی جدید
++	New Brush	برس جدید
++	New Brush Preset	قلم‌مو از پیش تنظیم شده جدید
++	New Brush Preset…	برس جدید از پیش تنظیم شده…
++	New Channel	کانال جدید
++	New channel only	فقط کانال جدید
++	New Channel…	کانال جدید …
++	New Crop Preset…	برش از پیش تعیین شده جدید…
++	New document	سند جدید
++	New Document	سند جدید
++	New Document With Mask	سند جدید با ماسک
++	New document…	سند جدید…
++	New document…     ⌘N	سند جدید… ⌘N
++	New effect layer	لایه افکت جدید
++	New Fill Layer	لایه پر جدید
++	New from Clipboard	جدید از حافظهٔ موقت
++	New Group	گروه جدید
++	New Guide	راهنمای جدید
++	New Guide Layout	طرح بندی راهنمای جدید
++	New Guide Layout…	چیدمان راهنمای جدید…
++	New Guide…	راهنمای جدید…
++	New Guides From Shape	راهنمای جدید از شکل
++	New Layer	لایهٔ جدید
++	New Layer Based Slice	برش مبتنی بر لایه جدید
++	New Layer Comp	لایه جدید Comp
++	New Layer from Brush	لایه جدید از Brush
++	New Layer With Mask	لایه جدید با ماسک
++	New Layer…	لایهٔ جدید…
++	New Path	مسیر جدید
++	New selection	انتخاب جدید
++	New Selection	انتخاب جدید
++	New Set…	مجموعه جدید…
++	New Shape Layer	لایه جدید شکل
++	New Size	اندازه جدید
++	New Smart Object via Copy	شیء هوشمند جدید از کپی
++	New Snapshot	عکس فوری جدید
++	New Spot Channel…	کانال جدید اسپات…
++	New Style…	سبک جدید…
++	New Swatch Group…	گروه جدید سواچ…
++	New Swatch…	سواچ جدید…
++	New Tool Preset	از پیش تنظیم ابزار جدید
++	New Type Layer	لایه نوع جدید
++	New Video Group	گروه ویدیویی جدید
++	New Video Layer	لایه ویدیویی جدید
++	New Video Layer from File	لایه ویدیویی جدید از فایل
++	New Video Layer from File…	لایه ویدیویی جدید از فایل…
++	New Window	پنجرهٔ جدید
++	New Window for Document	پنجره جدید برای سند
++	New Workspace	فضای کاری جدید
++	New Workspace…	فضای کاری جدید…
++	New…	جدید…
++	Newspaper	روزنامه
++	Next	بعدی
++	Next Appearance Mode	حالت ظاهر بعدی
++	Next Document	سند بعدی
++	Next frame	فریم بعدی
++	Next note	یادداشت بعدی
++	Next Theme	موضوع بعدی
++	No	خیر
++	No author	بدون نویسنده
++	No brush presets	بدون از پیش تنظیم برس
++	No character style	بدون سبک شخصیت
++	No Color	بدون رنگ
++	No Color Management	بدون مدیریت رنگ
++	No contributor data was built into this copy.	هیچ داده مشارکت کننده ای در این نسخه ساخته نشده است.
++	No custom shape "{name}": pick one in the options bar or Window › Shapes	بدون شکل سفارشی "{name}": یکی را در نوار گزینه ها یا پنجره › Shapes انتخاب کنید
++	No Dither	بدون دیدر
++	No document	بدون سند
++	No Document	بدون سند
++	No document open	هیچ سندی باز نیست
++	No Image	بدون تصویر
++	No Layer Comps	بدون لایه Comps
++	No layers	بدون لایه
++	No Layers	بدون لایه
++	No matching commands	بدون دستور منطبق
++	No matching settings	تنظیمات منطبقی وجود ندارد
++	No model credits were built into this copy.	هیچ اعتبار مدلی در این نسخه تعبیه نشده است.
++	No object found there — drag a rectangle around it	هیچ شیئی در آنجا یافت نشد - یک مستطیل را در اطراف آن بکشید
++	No path to make a selection from: draw one with the Pen tool or select one in the Paths panel.	مسیری برای انتخاب وجود ندارد: با ابزار Pen یکی را رسم کنید یا در پانل Paths یکی را انتخاب کنید.
++	No patterns	بدون الگو
++	No pin selected	پینی انتخاب نشده است
++	No presets for the current tool.	هیچ پیش تنظیمی برای ابزار فعلی وجود ندارد.
++	No presets of this type.	هیچ پیش تنظیمی از این نوع وجود ندارد.
++	No properties	بدون ویژگی
++	No recent files	هیچ فایل اخیری وجود ندارد
++	No Results	بدون نتیجه
++	No Results Found	هیچ نتیجه ای یافت نشد
++	No saved presets yet.	هنوز تنظیمات از پیش تعیین شده ذخیره نشده است.
++	No selection	بدون انتخاب
++	No Selection	بدون انتخاب
++	No Spelling Suggestions	بدون پیشنهاد املایی
++	No subject found — try a rectangle around the object	موضوعی یافت نشد - یک مستطیل در اطراف جسم امتحان کنید
++	No subject found — try Object Selection or the Lasso	موضوعی یافت نشد - انتخاب شی یا کمند را امتحان کنید
++	No tool presets.	بدون تنظیم ابزار.
++	Noise	نویز
++	Noise Color	رنگ نویز
++	Noise Color Detail	جزئیات رنگ نویز
++	Noise Luminance	درخشندگی نویز
++	Noise Luminance Detail	جزئیات درخشندگی نویز
++	Noise Reduction	کاهش نویز
++	none	هیچ کدام
++	None	هیچ‌کدام
++	Nonlinear History	تاریخچه غیرخطی
++	Normal	عادی
++	Normal tip	نوک معمولی
++	Not a web colour: click for the nearest web colour	رنگ وب نیست: برای نزدیکترین رنگ وب کلیک کنید
++	Not in Dictionary:	نه در فرهنگ لغت:
++	Note Paper	کاغذ یادداشت
++	Note tool	ابزار یادداشت
++	Note Tool	ابزار یادداشت
++	Notes	یادداشت ها
++	Notes…	یادداشت ها…
++	Nothing to paste: the clipboard holds no image	چیزی برای چسباندن نیست: کلیپ بورد هیچ تصویری را نگه نمی دارد
++	Nothing to Redo	چیزی برای انجام مجدد وجود ندارد
++	Nothing to Undo	چیزی برای لغو نیست
++	Notification Duration (seconds)	مدت زمان اعلان (ثانیه)
++	Now drag the selection onto another area	اکنون انتخاب را به ناحیه دیگری بکشید
++	NTSC (1953)	NTSC (1953)
++	NTSC Colors	رنگ های NTSC
++	Nudge Bundle Pause (ms)	مکث تکان دادن دسته (میلی‌ثانیه)
++	Number	تعداد
++	Number Of Levels	تعداد سطوح
++	Numbers	اعداد
++	Object Finder	شی یاب
++	Object Name / Title	نام / عنوان شی
++	Object Selection found nothing there — try a tighter rectangle	Object Selection چیزی در آنجا پیدا نکرد - یک مستطیل تنگ‌تر را امتحان کنید
++	Object Selection Tool	ابزار انتخاب شیء
++	Ocean Ripple	اوشن ریپل
++	Octagon	هشت ضلعی
++	Odd Fields	فیلدهای فرد
++	off	خاموش
++	Off	خاموش
++	Off: the speed of the pointer sets the spacing	خاموش: سرعت نشانگر فاصله را تعیین می‌کند
++	Offset	افست
++	Offset…	افست…
++	Oil Paint	رنگ روغن
++	Oil Paint…	رنگ روغن…
++	OK	تأیید
++	Oldstyle	استایل قدیمی
++	on	در
++	On	روشن
++	On Black	روی مشکی
++	On Layers	روی لایه ها
++	On White	روی سفید
++	One Flame Along Path	یک شعله در امتداد مسیر
++	Onion Skin	پوست پیاز
++	Only Web Colors	فقط رنگ های وب
++	Opacity	تیرگی
++	Opacity Jitter	تیرگی کدورت
++	Opacity Mask	ماسک شفافیت
++	Opacity Threshold	آستانه کدورت
++	Opacity:	تیرگی:
++	Open	باز کردن
++	Open a document to define variables.	یک سند را برای تعریف متغیرها باز کنید.
++	Open a document to select a colour range.	یک سند را برای انتخاب محدوده رنگ باز کنید.
++	Open a document to use the timeline.	برای استفاده از جدول زمانی، سندی را باز کنید.
++	Open As	As را باز کنید
++	Open as smart object	به عنوان شی هوشمند باز شود
++	Open As…	باز کردن با قالب…
++	Open color-less EXR as ACEScg	EXR بدون رنگ را به عنوان ACEScg باز کنید
++	Open documents as tabs	اسناد را به عنوان برگه باز کنید
++	Open EXR Parts…	باز کردن بخش‌های EXR…
++	Open File	فایل را باز کنید
++	Open Folder	پوشه را باز کنید
++	Open Image	تصویر را باز کنید
++	Open in camera raw	در دوربین خام باز کنید
++	Open paths use centered strokes	خط دور مسیرهای باز روی مرکز مسیر قرار می‌گیرد
++	Open Recent	پرونده‌های اخیر
++	Open Recent is unavailable on the web	Open Recent در وب در دسترس نیست
++	open source	منبع باز
++	Open…	باز کردن…
++	Open…     ⌘O	باز کردن… ⌘O
++	Opened {name}	{name} باز شد
++	Opened {url}	{url} باز شد
++	OpenGL	OpenGL
++	Opening	باز شدن
++	Opening {name}	باز کردن {name}
++	Opening {name}…	باز کردن {name}…
++	Opening…	باز کردن…
++	OpenType	OpenType
++	Operation	عملیات
++	Operation canceled	عملیات لغو شد
++	Operation cancelled	عملیات لغو شد
++	Operation completed	عملیات تکمیل شد
++	Operation failed	عملیات شکست خورد
++	Optical	نوری
++	Optimized	بهینه شده است
++	Option-click to define a source point to clone from	گزینه-کلیک کنید تا یک نقطه منبع برای شبیه سازی تعریف کنید
++	Options	گزینه ها
++	Or set Preferences › Performance › Linux display server to X11: PhotoCraft then always starts under XWayland.	یا تنظیمات برگزیده › عملکرد › سرور نمایشگر لینوکس را روی X11 تنظیم کنید: PhotoCraft همیشه تحت XWayland شروع می‌شود.
++	orange	نارنجی
++	Orange	نارنجی
++	Ordinals	دستورات
++	Orientation	جهت گیری
++	Original	اصل
++	Original Ratio	نسبت اصلی
++	Ornaments	زیور آلات
++	Other	دیگر
++	Other…	دیگر…
++	Out	بیرون
++	Out Black	بیرون سیاه
++	Out From Center	خارج از مرکز
++	Out Of Gamut	خارج از محدوده
++	Out of gamut for printing: click for the nearest printable colour	خارج از محدوده برای چاپ: برای نزدیکترین رنگ قابل چاپ کلیک کنید
++	Out of memory	از حافظه خارج شده است
++	Out White	خارج از سفید
++	Outer Bevel	اریب بیرونی
++	Outer Glow	درخشش بیرونی
++	Outer Glow…	درخشش بیرونی…
++	Output	خروجی
++	Output Channel:	کانال خروجی:
++	Output Levels	سطوح خروجی
++	Output Levels:	سطوح خروجی:
++	Output Settings	تنظیمات خروجی
++	Output To	خروجی به
++	Output:	خروجی:
++	Outside	بیرون
++	Oval	بیضی شکل
++	Overlay	هم‌پوشانی
++	Overlay Color	رنگ پوشش
++	Overlay Edge	لبه روکش
++	Overlay Opacity	Opacity همپوشانی
++	Overlay: Rule of Thirds	پوشش: قانون یک سوم
++	Override Action "Save" Commands	دستورات "ذخیره" را لغو کنید
++	Override Pressure	نادیده گرفتن فشار
++	Override Rotation	لغو چرخش
++	Override Tilt	نادیده گرفتن شیب
++	Overscroll	پیمایش فراتر از بوم
++	Package	بسته
++	Package…	بسته‌بندی…
++	Page Setup…	تنظیم صفحه…
++	Paint Bucket Tool	ابزار سطل رنگ
++	Paint Daubs	داوب ها را رنگ کنید
++	Paint over hair or fur on the image; Alt paints the other mode	روی مو یا خز روی تصویر نقاشی کنید. Alt حالت دیگر را رنگ می‌کند
++	Paint Overlay	پوشش رنگ
++	Painting	نقاشی
++	Paints from the document's opening state	رنگ هایی از حالت باز شدن سند
++	PAL/SECAM	PAL/SECAM
++	Palette Knife	چاقوی پالت
++	Panel	پانل
++	Panel locations are saved in the workspace. Keyboard shortcuts, menus and toolbar are optional.	مکان های پانل در فضای کاری ذخیره می شوند. میانبرهای صفحه کلید، منوها و نوار ابزار اختیاری هستند.
++	Panel menu	منوی پنل
++	Panel Options…	گزینه های پنل…
++	Panels	پانل ها
++	Paper	کاغذ
++	Paper Brightness	روشنایی کاغذ
++	Paper Height	ارتفاع کاغذ
++	Paper Width	عرض کاغذ
++	Paragraph	پاراگراف
++	Paragraph Panel	پانل پاراگراف
++	Paragraph Styles	سبک های پاراگراف
++	Paragraph Styles Panel	پانل سبک پاراگراف
++	Parallel	موازی
++	Pass Through	عبور مستقیم
++	Paste	چسباندن
++	Paste Complete Stroke	چسباندن کل حرکت قلم‌مو
++	Paste Fill	چسباندن پر کنید
++	Paste in Place	چسباندن در همان محل
++	Paste Into	چسباندن داخل انتخاب
++	Paste Layer Style	چسباندن سبک لایه
++	Paste Lorem Ipsum	چسب Lorem Ipsum
++	Paste Outside	چسباندن بیرون انتخاب
++	Paste Special	چسباندن ویژه
++	Patch	وصله
++	Patch Tool	ابزار وصله
++	Patch:	وصله:
++	Patchwork	تکه‌دوزی
++	Path	مسیر
++	Path Blur	تاری مسیر
++	Path Blur…	تاری مسیر…
++	Path Selection Tool	ابزار انتخاب مسیر
++	Path to Illustrator…	مسیری به تصویرگر…
++	Path:	مسیر:
++	Paths	مسیرها
++	Paths to Illustrator	مسیرهایی به ایلاستریتور
++	Paths to Illustrator…	مسیرهای رسیدن به ایلاستریتور…
++	Pattern	الگو
++	Pattern Fill…	پر کردن الگو…
++	Pattern Overlay	روکش الگو
++	Pattern Overlay…	روکش الگو…
++	Pattern Preview	پیش‌نمایش الگو
++	Pattern Size	اندازه الگو
++	Pattern Stamp	مهر الگو
++	Pattern Stamp Tool	ابزار مهر الگو
++	Pattern Type	نوع الگو
++	Pattern…	الگوی…
++	Patterns	الگوها
++	Pause	مکث کنید
++	PDF Presentation…	ارائه PDF…
++	Pen	قلم
++	Pen Pressure	فشار قلم
++	Pen Tilt	شیب قلم
++	Pen Tool	ابزار قلم
++	Pencil	مداد
++	Pencil Tool	ابزار مداد
++	Pencil Width	عرض مداد
++	Pentagon	پنتاگون
++	Percent	درصد
++	Percentage	درصد
++	Perceptual	ادراکی
++	Performance	عملکرد
++	Performance…	عملکرد…
++	Perimeter	محیط
++	Permission denied	اجازه رد شد
++	Perspective	پرسپکتیو
++	Perspective Crop	برش پرسپکتیو
++	Perspective Crop Tool	ابزار برش پرسپکتیو
++	Perspective Warp	تغییر شکل پرسپکتیو
++	Perspective Warp is not active	تغییر شکل پرسپکتیو فعال نیست
++	Perspective Warp: draw planes along the image's perspective, then switch to Warp	پرسپکتیو Warp: صفحات را در امتداد پرسپکتیو تصویر بکشید، سپس به Warp بروید
++	Phone	تلفن
++	Photo	عکس
++	Photo (2 × 3 in)	عکس (2 × 3 اینچ)
++	Photo (4 × 6 in)	عکس (4 × 6 اینچ)
++	Photo (5 × 7 in)	عکس (5 × 7 اینچ)
++	Photo (8 × 10 in)	عکس (8 × 10 اینچ)
++	Photo Filter	فیلتر عکس
++	Photo Filter…	فیلتر عکس…
++	Photocopy	فتوکپی
++	PhotoCraft	PhotoCraft
++	PhotoCraft — an open-source, native image editor written in Rust.	PhotoCraft - یک ویرایشگر تصویر منبع باز و بومی که به زبان Rust نوشته شده است.
++	PhotoCraft — Screen Color Picker	PhotoCraft - انتخابگر رنگ صفحه
++	PhotoCraft Defaults	پیش فرض های PhotoCraft
++	PhotoCraft found your keyboard shortcut set {set} from another image editor on this computer: {n} of its shortcuts differ from PhotoCraft's. Import it?	PhotoCraft مجموعه میانبر صفحه کلید شما {set} را از ویرایشگر تصویر دیگری در این رایانه پیدا کرد: {n} از میانبرهای آن با PhotoCraft متفاوت است. واردات آن؟
++	PhotoCraft is using the CPU image compositor. The window may still use your graphics adapter.	PhotoCraft از ترکیب‌کننده تصویر CPU استفاده می‌کند. ممکن است پنجره همچنان از آداپتور گرافیکی شما استفاده کند.
++	PhotoCraft keeps retrying; until a save succeeds, preference changes are lost when it closes.	PhotoCraft به تلاش مجدد ادامه می دهد. تا زمانی که یک ذخیره موفقیت آمیز نباشد، با بسته شدن آن، تغییرات اولویت از بین می رود.
++	PhotoCraft Manages Colors	PhotoCraft رنگ ها را مدیریت می‌کند
++	PhotoCraft on GitHub	PhotoCraft در GitHub
++	PhotoCraft website	وب سایت PhotoCraft
++	PhotoCraft Website	وب سایت PhotoCraft
++	Photography	عکاسی
++	Photomerge	ادغام عکس
++	Photomerge…	ادغام عکس…
++	Picas	پیکاها
++	Pick a screen pixel or press Esc to cancel	یک پیکسل صفحه را انتخاب کنید یا Esc را برای لغو فشار دهید
++	Pick Color From Image	رنگ را از تصویر انتخاب کنید
++	Pick screen color	رنگ صفحه نمایش را انتخاب کنید
++	Picture Frame	قاب عکس
++	Picture Frame…	قاب عکس…
++	Picture Package…	پکیج عکس …
++	Pillow Emboss	نقش برجسته بالش
++	Pin Depth:	عمق پین:
++	Pin Light	پین نور
++	Pinch	نیشگون گرفتن
++	Pinch…	نیشگون گرفتن…
++	Pins	پین ها
++	Pixel	پیکسل
++	Pixel Art	پیکسل آرت
++	Pixel Art Preview	پیش‌نمایش Pixel Art
++	Pixel Aspect Ratio	نسبت ابعاد پیکسل
++	Pixel Aspect Ratio Correction	تصحیح نسبت تصویر پیکسل
++	Pixel Grid	شبکه پیکسل
++	Pixel Layer	لایهٔ پیکسلی
++	Pixel Length:	طول پیکسل:
++	Pixel Replacement	جایگزینی پیکسل
++	Pixelate	پیکسلی
++	Pixels	پیکسل ها
++	Pixels:	پیکسل ها:
++	Pixels/Centimeter	پیکسل/سانتی متر
++	Pixels/Inch	پیکسل/اینچ
++	Place Embedded	مکان تعبیه شده
++	Place Embedded…	جای‌گذاری توکار…
++	Place Linked	مکان پیوند داده شده است
++	Place Linked…	جای‌گذاری پیوندی…
++	Place Scale Marker	نشانگر مقیاس مکان
++	Place Scale Marker…	نشانگر مقیاس مکان…
++	Plane	هواپیما
++	Planes	هواپیماها
++	Plaster	گچ
++	Plastic Wrap	روکش پلاستیکی
++	Platform: {os} {arch}	پلت فرم: {os} {arch}
++	Play	بازی کنید
++	Play Once	یکبار پخش کنید
++	Play selection	انتخاب بازی
++	Played {n} step	{n} مرحله اجرا شد
++	Please wait…	لطفا صبر کنید…
++	Plug-ins	افزونه‌ها
++	Plug-ins…	افزونه‌ها…
++	Png	Png
++	Point	نقطه
++	Point Curve	منحنی نقطه ای
++	Point Curve Blue	نقطه منحنی آبی
++	Point Curve Green	نقطه منحنی سبز
++	Point Curve Red	نقطه منحنی قرمز
++	Point Sample	نمونه نقطه ای
++	Point size	اندازه نقطه
++	Pointed	اشاره کرد
++	Pointillize	نقطه‌پردازی
++	Pointillize…	نقطه‌پردازی…
++	Points	امتیاز
++	Polar Coordinates	مختصات قطبی
++	Polar Coordinates…	مختصات قطبی…
++	Polar To Rectangular	قطبی به مستطیلی
++	Policy Cmyk	سیاست Cmyk
++	Policy Gray	سیاست خاکستری
++	Policy Rgb	سیاست Rgb
++	Polygon Tool	ابزار چند ضلعی
++	Polygonal Lasso Tool	کمند چندضلعی
++	Pond Ripples	امواج برکه
++	Portrait	پرتره
++	Portrait, 4 x 6	پرتره، 4 × 6
++	Portrait, 5 x 7	پرتره، 5 × 7
++	Position	موقعیت
++	Position and Size	موقعیت و اندازه
++	Postcard	کارت پستال
++	Poster	پوستر
++	Poster Edges	لبه های پوستر
++	Posterization	پوسترسازی
++	Posterize	پوستر کردن
++	Posterize…	کاهش پله‌های رنگ…
++	PostScript (72 points/inch)	پست اسکریپت (72 امتیاز/اینچ)
++	Precise	دقیق
++	Preferences	تنظیمات
++	Preferences can't be saved	تنظیمات برگزیده را نمی توان ذخیره کرد
++	Preferences saved	تنظیمات برگزیده ذخیره شد
++	Preferences were reset: {error}	تنظیمات برگزیده بازنشانی شد: {error}
++	Preferences…	تنظیمات…
++	Presentation	نمایش رابط
++	Preserve	حفظ کنید
++	Preserve details	جزئیات را حفظ کنید
++	Preserve Details	حفظ جزئیات
++	Preserve Luminosity	درخشندگی را حفظ کنید
++	Preserve Transparency	شفافیت را حفظ کنید
++	Preset	از پیش تعیین شده
++	PRESET DETAILS	جزئیات از پیش تعیین شده
++	Preset Manager	مدیر از پیش تعیین شده
++	Preset Manager…	مدیریت پیش‌تنظیم‌ها…
++	Preset Name	نام از پیش تعیین شده
++	Preset Name:	نام از پیش تعیین شده:
++	Preset Type	نوع از پیش تعیین شده
++	Preset:	از پیش تعیین شده:
++	Presets	پیش‌تنظیم‌ها
++	Presets:	پیش‌تنظیم‌ها:
++	Press keys	کلیدها را فشار دهید
++	Press keys…	کلیدها را فشار دهید…
++	Pressure	فشار
++	Pressure curve	منحنی فشار
++	Pressure for Opacity	فشار برای شفافیت
++	Pressure for Size	فشار برای اندازه
++	Prevent auto-nesting in and out of Artboards and Frames	از تودرتوی خودکار در داخل و خارج از Artboard و Frames جلوگیری کنید
++	Preview	پیش‌نمایش
++	Preview Image	پیش‌نمایش تصویر
++	Previous	قبلی
++	Previous Document	سند قبلی
++	Previous frame	قاب قبلی
++	Previous note	یادداشت قبلی
++	previous reading kept; the last re-read failed: {reason}	خواندن قبلی حفظ شد. آخرین بازخوانی ناموفق بود: {reason}
++	Prime105	Prime105
++	Prime35	Prime35
++	Print	چاپ کنید
++	Print One Copy	چاپ یک نسخه
++	Print resolution	وضوح چاپ
++	Print Resolution:	وضوح چاپ:
++	Print Settings…	تنظیمات چاپ…
++	Print Size	اندازه چاپ
++	Print…	چاپ…
++	Printed to {path}	چاپ شده در {path}
++	Printer	چاپگر
++	Printer Manages Colors	چاپگر رنگ ها را مدیریت می‌کند
++	Printer Setup	راه اندازی چاپگر
++	Printing Marks	چاپ علائم
++	Pro	حرفه ای
++	Pro (Dark)	حرفه ای (تاریک)
++	Pro (Light Gray)	حرفه ای (خاکستری روشن)
++	Pro (Light)	حرفه ای (نور)
++	Pro (Medium Gray)	حرفه ای (خاکستری متوسط)
++	Pro light	نور حرفه ای
++	Pro light gray	خاکستری روشن حرفه ای
++	Pro Light Gray Theme	تم خاکستری روشن حرفه ای
++	Pro Light Theme	تم نور حرفه ای
++	Pro medium	رسانه حرفه ای
++	Pro Medium	حرفه ای مدیوم
++	Pro Medium Gray Theme	تم خاکستری متوسط حرفه ای
++	Pro photo	عکس حرفه ای
++	Pro Theme	تم حرفه ای
++	Processing…	در حال پردازش…
++	Profile	نمایه
++	Profile Mismatches: Ask When Opening	عدم تطابق نمایه: هنگام باز کردن سؤال شود
++	Progressive	مترقی
++	Promote	ترویج کنید
++	Proof Colors	رنگ های اثبات شده
++	Proof Setup	راه اندازی اثبات
++	Proof Setup…	تنظیم اثبات…
++	Properties	ویژگی‌ها
++	ProPhoto	ProPhoto
++	ProPhoto RGB	ProPhoto RGB
++	Prophoto-compat	Prophoto-compat
++	Protect Detail	محافظت از جزئیات
++	Protect Foreground Color	محافظت از رنگ پیش زمینه
++	Protect skin tones	از رنگ پوست محافظت کنید
++	Protect Texture	از بافت محافظت کنید
++	Protect Tones	از زنگ ها محافظت کنید
++	Protect:	محافظت کنید:
++	Province / State	استان / ایالت
++	Proximity Match	مسابقه نزدیکی
++	PSD	PSD
++	Public Domain	دامنه عمومی
++	Pucker	پوکر
++	Pulled String Mode	حالت رشته کشیده شده
++	Punctuation	نقطه گذاری
++	Pupil Size	اندازه مردمک
++	Puppet Warp	تغییر شکل عروسکی
++	Puppet Warp is not active	Puppet Warp فعال نیست
++	Purge	تخلیهٔ حافظه
++	Purity	خلوص
++	Purple	بنفش
++	Push Left	به چپ فشار دهید
++	Put this command's shortcuts back as they were	میانبرهای این دستور را به همان شکلی که بودند برگردانید
++	Pyramids	اهرام
++	Quality	کیفیت
++	Quick Actions	اقدامات سریع
++	Quick Export as PNG	خروجی سریع PNG
++	Quick Export As PNG	صادرات سریع به عنوان PNG
++	Quick export format	فرمت صادرات سریع
++	Quick export location	محل صادرات سریع
++	Quick Mask	ماسک سریع
++	Quick Selection	انتخاب سریع
++	Quick Selection found nothing there	Quick Selection چیزی در آنجا پیدا نکرد
++	Quick Selection Tool	ابزار انتخاب سریع
++	Quick Sync	همگام سازی سریع
++	Quit	ترک کنید
++	Quit {app}	خروج از {app}
++	Quit PhotoCraft	از PhotoCraft خارج شوید
++	R g b	R g b
++	R G B	R G B
++	Radial	شعاعی
++	Radial Blur	تاری شعاعی
++	Radial Blur…	تاری شعاعی…
++	Radial Gradient	گرادیان شعاعی
++	Radius	شعاع
++	Radius X	شعاع X
++	Radius Y	شعاع Y
++	Radius:	شعاع:
++	Ran script {name}	اجرای اسکریپت {name}
++	Random	تصادفی
++	Randomize Length	طول تصادفی کنید
++	Randomize Shapes	تصادفی کردن اشکال
++	Range	محدوده
++	Range:	محدوده:
++	Rasterize	تبدیل به پیکسل
++	Rasterize Fill Content	تبدیل محتوای پرشدگی به پیکسل
++	Rasterize Layer	تبدیل لایه به پیکسل
++	Rasterize Layer Style	تبدیل سبک لایه به پیکسل
++	Rasterize Layers	تبدیل لایه‌ها به پیکسل
++	Rasterize Shape	تبدیل شکل به پیکسل
++	Rasterize Smart Object	تبدیل شیء هوشمند به پیکسل
++	Rasterize svg groups deeper than	تبدیل گروه‌های SVG عمیق‌تر از این مقدار به پیکسل
++	Rasterize Type	تبدیل متن به پیکسل
++	Rasterize Type Layer	تبدیل لایهٔ متن به پیکسل
++	Rate	امتیاز دهید
++	Ratio	نسبت
++	Raw Data	داده های خام
++	Raw Defaults	پیش فرض های خام
++	Raw Defaults…	پیش‌فرض‌های خام…
++	Reading	خواندن
++	Reading…	خواندن…
++	Ready	آماده است
++	Real name	نام واقعی
++	Rec2020	Rec2020
++	Recent	اخیر
++	Recent file count	تعداد فایل های اخیر
++	Recent files	فایل های اخیر
++	Recent Files	فایل های اخیر
++	Recent fonts	فونت های اخیر
++	Recent Items	موارد اخیر
++	Recently Used	اخیرا استفاده شده است
++	Reconstruct	بازسازی کنید
++	Reconstruct All	بازسازی همه
++	Record ● a sequence of edits, then play ▶ it on any document.	● دنباله ای از ویرایش ها را ضبط کنید، سپس ▶ آن را روی هر سندی پخش کنید.
++	Record Measurements	ثبت اندازه گیری ها
++	Recover on launch	بازیابی در راه اندازی
++	Recovered {name}	{name} بازیابی شد
++	Recovery	بازیابی
++	Rectangle	مستطیل
++	Rectangle Tool	ابزار مستطیل
++	Rectangular	مستطیل شکل
++	Rectangular Marquee Tool	ابزار انتخاب مستطیلی
++	Rectangular Selection	انتخاب مستطیلی
++	Rectangular To Polar	مستطیل به قطبی
++	red	قرمز
++	Red	قرمز
++	Red Cyan	فیروزه ای قرمز
++	Red Eye	چشم قرمز
++	Red Eye Tool	ابزار قرمزی چشم
++	Redefine style by current selection	بازتعریف سبک با انتخاب فعلی
++	Redo	ازنو
++	Redrawing	ترسیم مجدد
++	Reds	قرمزها
++	Reduce Color Noise	کاهش نویز رنگ
++	Reduce Noise	کاهش نویز
++	Reduce Noise…	کاهش نویز…
++	Reference point location	محل نقطه مرجع
++	Refine	پالایش کنید
++	Refine Edge	لبه را اصلاح کنید
++	Refine Edge Brush (R)	برس لبه اصلاح (R)
++	Refine Strokes	بهبود حرکت‌های قلم‌مو
++	Reflect	منعکس کنید
++	Reflected	منعکس شده است
++	Reflected Gradient	گرادیان منعکس شده
++	Registration Marks	علائم ثبت نام
++	Regular	منظم
++	Relative	نسبی
++	Relative Colorimetric	رنگ سنجی نسبی
++	Release Clipping Mask	آزاد کردن ماسک برش
++	Relief	امداد
++	Relight…	روشن کردن…
++	Relink to File	پیوند مجدد به فایل
++	Relink to File…	پیوند دوباره به پرونده…
++	Relink to Library Graphic…	پیوند دوباره به تصویر کتابخانه…
++	Reload Frame	بارگذاری مجدد قاب
++	Remember this choice for future images	این انتخاب را برای تصاویر آینده به خاطر بسپارید
++	Remember to turn off the printer's own colour management in Print Settings…	فراموش نکنید که مدیریت رنگ چاپگر را در تنظیمات چاپ غیرفعال کنید…
++	Remember workspace changes	تغییرات فضای کاری را به خاطر بسپارید
++	Remove	حذف
++	Remove {name} from Recent	حذف {name} از فهرست اخیر
++	Remove after each stroke	حذف پس از هر حرکت قلم‌مو
++	Remove All	حذف همه
++	Remove All Pins	حذف همه پین ها
++	Remove Background	حذف پس زمینه
++	Remove Black Matte	مات مشکی را بردارید
++	Remove from favorites	حذف از موارد دلخواه
++	Remove from Recent	حذف از فهرست اخیر
++	Remove Jpeg Artifact	Jpeg Artifact را حذف کنید
++	Remove pair	جفت را حذف کنید
++	Remove Planes	هواپیماها را حذف کنید
++	Remove stop	استاپ را بردارید
++	Remove Tool	حذف ابزار
++	Remove variable	حذف متغیر
++	Remove Warp Split	Warp Split را حذف کنید
++	Remove White Matte	مات سفید را بردارید
++	Rename	تغییر نام
++	Rename Brush	تغییر نام قلم‌مو
++	Rename Brush…	تغییر نام قلم‌مو…
++	Rename Channel…	تغییر نام کانال…
++	Rename Group	تغییر نام گروه
++	Rename Group…	تغییر نام گروه…
++	Rename Layer	تغییر نام لایه
++	Rename Layer Comp	تغییر نام لایه Comp
++	Rename Layer…	تغییر نام لایه…
++	Rename Tool Preset	تغییر نام از پیش تعیین شده ابزار
++	Rename Tool Preset…	تغییر نام از پیش تعیین شده ابزار…
++	Rename…	تغییر نام…
++	Render	رندر
++	Render Video	رندر ویدیو
++	Render Video…	رندر ویدیو…
++	Rendering mode	حالت رندر
++	Rendering Mode	حالت رندر
++	Rendering…	در حال ارائه…
++	Reorder Layer	مرتب سازی مجدد لایه
++	Repeat	تکرار کنید
++	Replace	جایگزین کنید
++	Replace All Missing Fonts	همه فونت های از دست رفته را جایگزین کنید
++	Replace Color	رنگ را جایگزین کنید
++	Replace Color…	جایگزینی رنگ…
++	Replace Contents	مطالب را جایگزین کنید
++	Replace Contents…	جایگزینی محتوا…
++	Replace Footage	فیلم را جایگزین کنید
++	Replace Footage…	تعویض فیلم…
++	Replace it with this document, or cancel and use File › Save As to keep both.	آن را با این سند جایگزین کنید، یا لغو کنید و از File › Save As برای حفظ هر دو استفاده کنید.
++	Replace Swatches…	تعویض نمونه…
++	Report a Bug	گزارش یک اشکال
++	Report an Issue	گزارش یک مشکل
++	Report an Issue…	گزارش یک مشکل…
++	Resample	نمونه گیری مجدد
++	Reselect	انتخاب دوباره
++	Reset	بازنشانی
++	Reset Alignment	تنظیم مجدد
++	Reset All	بازنشانی همه
++	Reset All Locked Settings	بازنشانی همه تنظیمات قفل شده
++	Reset All to Defaults	همه را به حالت پیش فرض بازنشانی کنید
++	Reset All Tools	بازنشانی همه ابزارها
++	Reset all tools to their default settings?	همه ابزارها به تنظیمات پیش فرض بازنشانی شوند؟
++	Reset GPU Backend	بازنشانی GPU Backend
++	Reset Preferences	تنظیمات برگزیده را بازنشانی کنید
++	Reset Section	بازنشانی بخش
++	Reset Swatches	بازنشانی نمونه ها
++	Reset the brush to the defaults	قلم‌مو را به حالت پیش فرض بازنشانی کنید
++	Reset to Default	به حالت پیش فرض بازنشانی کنید
++	Reset to defaults	به حالت پیش فرض بازنشانی کنید
++	Reset Tool	ابزار بازنشانی
++	Reset Transform	بازنشانی تبدیل
++	Reset View	بازنشانی نمای
++	Reset Workspace	بازنشانی فضای کاری
++	Resize image during place	تغییر اندازه تصویر در طول مکان
++	Resize panel window	تغییر اندازه پنجره پانل
++	Resize panels	تغییر اندازه پانل ها
++	Resolution	وضوح
++	Resolution:	وضوح:
++	Resolution: {dpi} pixels/inch	وضوح: {dpi} پیکسل/اینچ
++	Resolve Missing Fonts	رفع فونت های گمشده
++	Resolve Missing Fonts…	حل فونت های از دست رفته…
++	Response curve	منحنی پاسخ
++	Restart	راه اندازی مجدد
++	Restart Required	راه اندازی مجدد لازم است
++	Restore	بازیابی
++	Restore All	بازیابی همه
++	Restore All Frames	بازیابی همه فریم ها
++	Restore Defaults	بازیابی پیش فرض ها
++	Restore Frame	بازیابی قاب
++	Restore last viewed comp	آخرین بار مشاهده شده را بازیابی کنید
++	Restore Original Edge	لبه اصلی را بازیابی کنید
++	Restore original size	بازیابی اندازه اصلی
++	Restrictive (Web)	محدود کننده (وب)
++	Result	نتیجه
++	Resume	رزومه
++	Reticulation	شبکه بندی
++	Retry	دوباره امتحان کنید
++	Retry GPU	GPU را دوباره امتحان کنید
++	Retry GPU requires a restart. Save your work first.	امتحان مجدد GPU نیاز به راه اندازی مجدد دارد. ابتدا کار خود را ذخیره کنید.
++	Retry saving presets	دوباره سعی کنید تنظیمات از پیش تعیین شده را ذخیره کنید
++	Reveal All	آشکار کردن همه
++	Reveal in Finder	در Finder آشکار شود
++	Reveal Selection	انتخاب را فاش کن
++	Reverse	معکوس
++	Reverse the order	ترتیب را معکوس کنید
++	Revert	بازگشت به نسخهٔ ذخیره‌شده
++	Revert “{name}” to the last saved version? Your changes will be lost.	«{name}» به آخرین نسخه ذخیره شده برگردانده شود؟ تغییرات شما از بین خواهد رفت.
++	Rgb	Rgb
++	RGB	RGB
++	RGB Color	رنگ RGB
++	RGB:	RGB:
++	Ridges	برآمدگی ها
++	Right	راست
++	Right align text	متن را تراز راست کنید
++	Right click with painting tools	با ابزار نقاشی کلیک راست کنید
++	Right Diagonal	مورب سمت راست
++	Right Edges	لبه های راست
++	Right:	راست:
++	Rigid	سفت و سخت
++	Ring	حلقه
++	Ring - Double	حلقه - دو نفره
++	Ripple	ریپل
++	Ripple Magnitude	بزرگی ریپل
++	Ripple Size	سایز ریپل
++	Ripple…	ریپل…
++	Rise	برخاستن
++	Rolling Slope - Descending	شیب نورد - نزولی
++	Roman	رومی
++	Roman Hanging Punctuation	نشانه گذاری آویزان رومی
++	Rope	طناب
++	Roses	گل رز
++	Rotate	چرخش
++	Rotate 180°	چرخش ۱۸۰ درجه
++	Rotate 90° Clockwise	چرخش ۹۰ درجه ساعت‌گرد
++	Rotate 90° Counter Clockwise	چرخش ۹۰ درجه پادساعت‌گرد
++	Rotate Auto	چرخش خودکار
++	Rotate Fixed	چرخش ثابت شد
++	Rotate View	چرخش نمای
++	Rotate View Tool	ابزار چرخش نما
++	Rotate view with trackpad	چرخش نمای با ترک پد
++	Rotate:	چرخش:
++	Rotation	چرخش
++	Rotation Adaptation	سازگاری چرخشی
++	Rough Pastels	پاستل خشن
++	Roughness	زبری
++	Round	گرد
++	Rounded Steps	پله های گرد
++	Roundness	گردی
++	Roundness Jitter	گردی جیتر
++	Roundness:	گردی:
++	Row Order	ترتیب ردیف
++	Rows	ردیف‌ها
++	Rule of Thirds	قانون یک سوم
++	Ruler	خط‌کش
++	Ruler Tool	ابزار خط‌کش
++	Ruler Units	واحدهای خط‌کش
++	Rulers	خط‌کش‌ها
++	Rulers  (⌘R)	خط‌کش‌ها (⌘R)
++	Rulers & Grids	خط‌کش‌ها و شبکه‌ها
++	Same folder	همون پوشه
++	Sample	نمونه
++	Sample a pixel anywhere on the screen	یک پیکسل را در هر نقطه از صفحه نمونه بگیرید
++	Sample All Layers	نمونه‌برداری از همهٔ لایه‌ها
++	Sample Size	اندازه نمونه
++	Sample Size:	حجم نمونه:
++	Sample:	نمونه:
++	Sample: foreground colour	نمونه: رنگ پیش زمینه
++	Sampled Colors	رنگ های نمونه
++	Sampler	نمونه بردار
++	Sampling Area	منطقه نمونه برداری
++	Sampling Area Options	گزینه های منطقه نمونه برداری
++	Sampling Area Overlay	پوشش منطقه نمونه برداری
++	Sampling Brush Tool	ابزار قلم‌مو نمونه برداری
++	Sampling: Background Swatch	نمونه برداری: سواچ پس زمینه
++	Sampling: Continuous	نمونه برداری: پیوسته
++	Sampling: Once	نمونه برداری: یکبار
++	Sandstone	ماسه سنگ
++	Sat	نشست
++	Satin	ساتن
++	Satin…	ساتن…
++	Saturate	اشباع کنید
++	Saturation	اشباع
++	Saturation Jitter	جیتر اشباع
++	Save	ذخیره
++	Save a Copy	یک کپی ذخیره کنید
++	Save a Copy…	ذخیرهٔ یک نسخه…
++	Save a list of these shortcuts as a web page	لیستی از این میانبرها را به عنوان یک صفحه وب ذخیره کنید
++	Save Actions…	ذخیره اقدامات…
++	Save As	ذخیره به عنوان
++	Save as PDF	ذخیره به صورت PDF
++	Save As Preset	ذخیره به عنوان از پیش تعیین شده
++	Save As…	ذخیره با نام…
++	Save before closing?	قبل از بسته شدن ذخیره شود؟
++	Save cancelled	ذخیره لغو شد
++	Save Changes	ذخیره تغییرات
++	Save Default Type Styles	ذخیره سبک های نوع پیش فرض
++	Save failed: {error}	ذخیره انجام نشد: {error}
++	Save File	ذخیره فایل
++	Save for Web	ذخیره برای وب
++	Save for Web (Legacy)	ذخیره برای وب (قدیمی)
++	Save for Web (Legacy)…	ذخیره برای وب (قدیمی)…
++	Save HTML and Images	HTML و تصاویر را ذخیره کنید
++	Save Image	ذخیره تصویر
++	Save in background	ذخیره در پس زمینه
++	Save Path	ذخیرهٔ مسیر
++	Save Pixel Aspect Ratio	نسبت تصویر پیکسل را ذخیره کنید
++	Save Preset…	ذخیره از پیش تنظیم…
++	Save Selection	ذخیره انتخاب
++	Save selection as channel	ذخیره انتخاب به عنوان کانال
++	Save Selection…	ذخیرهٔ انتخاب…
++	Save Set…	ذخیره مجموعه…
++	Save Settings…	ذخیره تنظیمات…
++	Save the changes to this set	تغییرات را در این مجموعه ذخیره کنید
++	Save these settings as a Camera Raw .xmp file	این تنظیمات را به عنوان یک فایل Camera Raw .xmp ذخیره کنید
++	Save these shortcuts as a .kys file	این میانبرها را به عنوان فایل .kys ذخیره کنید
++	Save these shortcuts as a new set	این میانبرها را به عنوان یک مجموعه جدید ذخیره کنید
++	Save your work and restart PhotoCraft to retry GPU acceleration. CPU rendering remains active for this session.	کار خود را ذخیره کنید و PhotoCraft را مجدداً راه اندازی کنید تا شتاب GPU را دوباره امتحان کنید. رندر CPU برای این جلسه فعال باقی می ماند.
++	Save…	ذخیره…
++	Saved	ذخیره شد
++	Saved {n} action to {file}	{n} عملیات در {file} ذخیره شد
++	Saved {name}	ذخیره شده {name}
++	Saved {path}; image assets: {n} in {dir}	{path} ذخیره شد. دارایی های تصویر: {n} در {dir}
++	Saved a copy as {path}	یک کپی به عنوان {path} ذخیره شد
++	Saved for Web: {n} file	ذخیره برای وب: {n} پرونده
++	Saved Multichannel	چند کانالی ذخیره شد
++	Saving {name}	در حال ذخیره {name}
++	Saving {percent}	صرفه جویی در {percent}
++	Saving brush presets… Keep this tab open until saving finishes.	در حال ذخیره از پیش تنظیمات قلم‌مو... این برگه را تا پایان ذخیره باز نگه دارید.
++	Saving…	در حال ذخیره…
++	Sawtooth 1	دندان اره ای 1
++	Scale	مقیاس
++	Scale Effects	جلوه های مقیاس
++	Scale Effects…	جلوه های مقیاس…
++	Scale Factor	ضریب مقیاس
++	Scale Horizontally	مقیاس افقی
++	Scale or rotate the moved area, then press {key}	ناحیه منتقل شده را مقیاس یا بچرخانید، سپس {key} را فشار دهید
++	Scale to Fit Media	مقیاس به مناسب رسانه
++	Scale Units	واحدهای مقیاس
++	Scale Vertically	مقیاس عمودی
++	Scale:	مقیاس:
++	Scaling	مقیاس بندی
++	Scallops	گوش ماهی
++	Scatter	پراکنده کردن
++	Scattering	پراکندگی
++	Scope	محدوده
++	Scratch disks	دیسک‌های موقت
++	Scratch Disks	دیسک‌های موقت
++	Scratch Disks…	دیسک‌های موقت…
++	Scratch Sizes	اندازهٔ فضای موقت
++	Scratch: {size}	فضای موقت: {size}
++	Screen	اسکرین
++	Screen Mode	حالت صفحه نمایش
++	Screen resolution	وضوح صفحه نمایش
++	Script Events Manager	مدیر رویدادهای اسکریپت
++	Script Events Manager…	مدیر رویدادهای اسکریپت…
++	Scripts	اسکریپت‌ها
++	Scroll menu down	منو به پایین اسکرول کنید
++	Scroll menu up	اسکرول منو به بالا
++	Scroll to zoom	برای بزرگنمایی اسکرول کنید
++	Scrubby slider acceleration	شتاب اسلایدر اسکرابی
++	Scrubby Zoom	بزرگ‌نمایی با کشیدن
++	Seafoam	فوم دریایی
++	Search	جست‌وجو
++	Search Brushes	قلم‌مو های جستجو
++	Search commands	دستورات جستجو
++	Search commands (⌘K)	دستورات جستجو (⌘K)
++	Search commands, tools and panels	فرمان ها، ابزارها و پانل ها را جستجو کنید
++	Search commands, tools and panels…	جستجوی دستورات، ابزارها و پانل ها…
++	Search fonts	جستجوی فونت ها
++	Search menus	جستجو در منوها
++	Search settings…	تنظیمات جستجو…
++	Search…	جست‌وجو…
++	Second Color Readout	بازخوانی رنگ دوم
++	Seed	بذر
++	Select	انتخاب
++	Select a type layer or click into text to insert glyphs	یک لایه نوع را انتخاب کنید یا روی متن کلیک کنید تا حروف نگارشی را وارد کنید
++	Select a type layer to edit its character and paragraph settings.	یک لایه نوع را انتخاب کنید تا تنظیمات کاراکتر و پاراگراف آن را ویرایش کنید.
++	Select All	انتخاب همه
++	Select All Layers	همه لایه ها را انتخاب کنید
++	Select an action first	ابتدا یک اقدام را انتخاب کنید
++	Select and Mask	انتخاب کنید و ماسک کنید
++	Select and Mask…	انتخاب و ماسک…
++	Select Bottom Layer	لایه پایین را انتخاب کنید
++	Select Custom Color…	انتخاب رنگ سفارشی…
++	Select Data Points	Data Points را انتخاب کنید
++	Select Data Points…	نقاط داده را انتخاب کنید…
++	Select Folder…	انتخاب پوشه…
++	Select Inverse	Inverse را انتخاب کنید
++	Select Layer	Layer را انتخاب کنید
++	Select Layer Above	Layer Above را انتخاب کنید
++	Select Layer Below	لایه زیر را انتخاب کنید
++	Select Linked Layers	لایه های پیوندی را انتخاب کنید
++	Select Plane	هواپیما را انتخاب کنید
++	Select Similar Colors	رنگ های مشابه را انتخاب کنید
++	Select Subject	موضوع را انتخاب کنید
++	Select text to apply a character style	متن را برای اعمال سبک کاراکتر انتخاب کنید
++	Select the crop presets to delete	پیش تنظیمات برش را برای حذف انتخاب کنید
++	Select the crop presets to delete:	از پیش تنظیمات برش را برای حذف انتخاب کنید:
++	Select Top Layer	لایه بالا را انتخاب کنید
++	Select:	انتخاب:
++	Selected	انتخاب‌شده
++	Selected Areas	مناطق انتخاب شده
++	Selected Artboards	بوم‌های انتخاب‌شده
++	Selected at launch: {backend}	انتخاب شده در هنگام راه اندازی: {backend}
++	Selection	انتخاب
++	Selection Edges	لبه های انتخاب
++	Selection Preview:	پیش‌نمایش انتخاب:
++	Selections	انتخاب ها
++	Selective	انتخابی
++	Selective Color	رنگ انتخابی
++	Selective Color…	رنگ انتخابی…
++	Semi Bold	نیمه پررنگ
++	SemiBold	نیمه پررنگ
++	Send Backward	ارسال به عقب
++	Send the selected pin backward	پین انتخاب شده را به عقب ارسال کنید
++	Send to Back	ارسال به عقب
++	Sensitivity	حساسیت
++	Sent to {printer}	ارسال به {printer}
++	Sent to the printer ({spooler})	به چاپگر ارسال شد ({spooler})
++	Sepia	سپیا
++	Services	خدمات
++	Sessions only	فقط جلسات
++	Set additional Crop options	گزینه های Crop اضافی را تنظیم کنید
++	Set additional smoothing options	گزینه های هموارسازی اضافی را تنظیم کنید
++	Set background color	تنظیم رنگ پس زمینه
++	Set Black Point	نقطه سیاه را تنظیم کنید
++	Set Colors	تنظیم رنگ ها
++	Set deleted.	مجموعه حذف شد.
++	Set foreground color	تنظیم رنگ پیش زمینه
++	Set GPU Memory in Preferences › Performance to what your graphics card can hold, at most 3/8 of its memory. Automatic follows Memory Usage, within a quarter of this computer's memory and 3/8 of the card's, and doesn't count the document against a card whose memory is known. The status bar shows GPU Memory Full while they don't fit.	حافظه GPU را در تنظیمات برگزیده تنظیم کنید › عملکرد را به میزانی که کارت گرافیک شما می تواند نگه دارد، حداکثر 3/8 حافظه خود تنظیم کنید. خودکار از میزان استفاده از حافظه در یک چهارم حافظه این رایانه و 3/8 حافظه کارت پیروی می‌کند و سند را در مقابل کارتی که حافظه آن مشخص است به حساب نمی آورد. نوار وضعیت حافظه GPU را کامل نشان می دهد در حالی که آنها مناسب نیستند.
++	Set horizontal skew	چولگی افقی را تنظیم کنید
++	set in Print Settings…	تنظیم در تنظیمات چاپ…
++	Set Measurement Scale	تنظیم مقیاس اندازه گیری
++	Set Measurement Scale…	تنظیم مقیاس اندازه گیری…
++	set name	نام مجموعه
++	Set Neutral Gray Point	نقطه خاکستری خنثی را تنظیم کنید
++	Set New Snapshot as Default	New Snapshot را به عنوان پیش فرض تنظیم کنید
++	Set painting symmetry options	گزینه های تقارن نقاشی را تنظیم کنید
++	Set saved.	مجموعه ذخیره شد.
++	Set shape fill type	نوع پر شدن شکل را تنظیم کنید
++	Set shape stroke type	تنظیم نوع خط دور شکل
++	Set Start Timecode…	تنظیم کد زمان شروع…
++	Set the overlay options for the Crop tool	گزینه های پوشش را برای ابزار Crop تنظیم کنید
++	Set the text color	رنگ متن را تنظیم کنید
++	Set vertical skew	چولگی عمودی را تنظیم کنید
++	Set White Point	نقطه سفید را تنظیم کنید
++	Set:	مجموعه:
++	Settings	تنظیمات
++	Settings:	تنظیمات:
++	Settings…	تنظیمات…
++	Sgray	گری
++	Shadow	سایه
++	Shadow Amount	مقدار سایه
++	Shadow Clipping Warning (U)	هشدار برش سایه (U)
++	Shadow Intensity	شدت سایه
++	Shadow Radius	شعاع سایه
++	Shadow Tone	تن سایه
++	Shadows	سایه‌ها
++	Shadows up to:	سایه ها تا:
++	Shadows/Highlights	سایه ها/نقاط برجسته
++	Shadows/Highlights…	سایه‌ها و روشنایی‌ها…
++	Shallow	کم عمق
++	Shape	شکل
++	Shape Blur	شکل تاری
++	Shape Blur…	تاری شکل…
++	Shape Dynamics	دینامیک شکل
++	Shape Layer	لایه شکل
++	Shape:	شکل:
++	Shapes	اشکال
++	Sharp	شارپ
++	Sharpen	افزایش وضوح
++	Sharpen Amount	مقدار افزایش وضوح
++	Sharpen Detail	جزئیات افزایش وضوح
++	Sharpen Details	افزایش وضوح جزئیات
++	Sharpen Edges	افزایش وضوح لبه‌ها
++	Sharpen for	افزایش وضوح برای
++	Sharpen Masking	ماسک افزایش وضوح
++	Sharpen More	افزایش وضوح بیشتر
++	Sharpen Radius	شعاع افزایش وضوح
++	Sharpen Tool	ابزار افزایش وضوح
++	Sharpening	افزایش وضوح
++	Sharpness	وضوح
++	Shear	برش
++	Shear…	برش…
++	Shell Lower	پوسته پایین
++	Shell Upper	پوسته بالایی
++	Shift	شیفت
++	Shift Edge	جابجایی لبه
++	Shine	بدرخشید
++	Short Lines	خطوط کوتاه
++	Short Strokes	حرکت‌های کوتاه قلم‌مو
++	shortcut	میانبر
++	Shortcut	میانبر
++	Shortcut removed.	میانبر حذف شد.
++	Shortcuts	میانبرها
++	Show	نمایش دهید
++	Show All	نمایش همه
++	Show All Menu Items	نمایش همه موارد منو
++	Show Altered Video	نمایش ویدیوی تغییر یافته
++	Show Backdrop	نمایش پس زمینه
++	Show bounding box when dragging layer	نشان دادن کادر محدود هنگام کشیدن لایه
++	Show canvas dots	نمایش نقاط بوم
++	Show channels in color	نمایش کانال ها به صورت رنگی
++	Show Cropped Area	نمایش منطقه برش خورده
++	Show crosshair in brush tip	در نوک قلم‌مو، تلاقی را نشان دهید
++	Show dialog during playback	نمایش گفتگو در حین پخش
++	Show Edge	نمایش لبه
++	Show extension panels	نمایش پانل های افزونه
++	Show Extras Options	نمایش گزینه های اضافی
++	Show Extras Options…	نمایش گزینه های اضافی…
++	Show font names in english	نمایش نام فونت ها به زبان انگلیسی
++	Show Grid	نمایش گرید
++	Show Guides	نمایش راهنماها
++	Show Guides  (⌘;)	نمایش راهنماها (⌘;)
++	Show highlight on rollover	نمایش هایلایت در جابجایی
++	Show home recent files	نمایش پرونده‌های اخیر در صفحهٔ آغازین
++	Show in Explorer	نمایش در اکسپلورر
++	Show in Folder	نمایش در پوشه
++	Show Lab Color Readouts	نمایش بازخوانی های رنگی آزمایشگاهی
++	Show Mask	نمایش ماسک
++	Show menu colors	نمایش رنگ های منو
++	Show Mesh	نمایش مش
++	Show New Snapshot Dialog by Default	نمایش گفتگوی جدید عکس فوری به صورت پیش فرض
++	Show only crosshair while painting	در حین رنگ آمیزی فقط تلاقی را نشان دهید
++	Show or hide the Notes panel	نمایش یا پنهان کردن پانل یادداشت ها
++	Show Original	نمایش اصلی
++	Show Overlay	نمایش همپوشانی
++	Show Red at 3 o'clock	نمایش قرمز در ساعت 3
++	Show rulers	حاکمان را نشان دهید
++	Show Rulers	نمایش خط کش ها
++	Show Sampling Area	نمایش منطقه نمونه برداری
++	Show Sampling Ring	نمایش حلقه نمونه برداری
++	Show Selected Region	نمایش منطقه انتخاب شده
++	Show Skin Tone Indicator	نمایشگر رنگ پوست
++	Show slice numbers	نمایش اعداد برش
++	Show the layer mask as an overlay	ماسک لایه را به صورت روکش نشان دهید
++	Show the layer's effects  ({key}-click: all layers)	نمایش جلوه های لایه ({key}-click: all layers)
++	Show the layer's effects  (⌥-click: all layers)	نمایش جلوه های لایه (⌥-کلیک کنید: همه لایه ها)
++	Show tooltips	نمایش راهنمای ابزار
++	Show Transform Controls	نمایش کنترل های تبدیل
++	Show transformation values	نمایش مقادیر تبدیل
++	Show Vectorscope	نمایش وکتورسکوپ
++	Show:	نمایش:
++	Show/Hide All Panels	نمایش/پنهان کردن همه پانل ها
++	Show/Hide Panels	نمایش/پنهان کردن پانل ها
++	Shutter Speed	سرعت شاتر
++	Sides	طرفین
++	Sides:	طرفین:
++	Similar	مشابه
++	Simple	ساده
++	Simulate Paper	شبیه سازی کاغذ
++	Simulate Pressure	شبیه سازی فشار
++	Sine	سینوسی
++	Single Column Marquee Tool	ابزار خیاطی تک ستونی
++	Single Row Marquee Tool	ابزار انتخاب تک‌ردیفی
++	Single Word Justification	توجیه تک کلمه ای
++	Size	اندازه
++	Size Jitter	سایز جیتر
++	Size:	اندازه:
++	Sketch	طرح
++	Skew	اریب کردن
++	Skewness	چولگی
++	Skip	پرش کنید
++	Sky	آسمان
++	Slant	شیب
++	Slice color	رنگ قطعه
++	Slice Options	گزینه‌های قطعه
++	Slice Options…	گزینه‌های قطعه…
++	Slice Select Tool	ابزار انتخاب قطعه
++	Slice Tool	ابزار قطعه‌بندی
++	Slices	قطعه‌ها
++	Slices are locked (View › Lock Slices)	قطعه‌ها قفل هستند (نمایش › قفل قطعه‌ها)
++	Slices From Guides	ساخت قطعه‌ها از راهنماها
++	Small	کوچک
++	Small Caps	کلاهک های کوچک
++	Smart Blur	تاری هوشمند
++	Smart Blur…	تاری هوشمند…
++	Smart Filter	فیلتر هوشمند
++	Smart Filters	فیلترهای هوشمند
++	Smart guide color	رنگ راهنمای هوشمند
++	Smart Guides	راهنماهای هوشمند
++	Smart Object	شیء هوشمند
++	Smart Object Layer	لایهٔ شیء هوشمند
++	Smart Objects	اشیای هوشمند
++	Smart quotes	گیومه‌های هوشمند
++	Smart Radius	شعاع هوشمند
++	Smart Sharpen	افزایش وضوح هوشمند
++	Smart Sharpen…	افزایش وضوح هوشمند…
++	Smooth	صاف
++	Smooth the curve values	مقادیر منحنی را صاف کنید
++	Smooth…	هموار کردن…
++	Smoothing	صاف کردن
++	Smoothness	صافی
++	SMPTE C	SMPTE C
++	Smudge	پخش کردن رنگ
++	Smudge Stick	قلم پخش رنگ
++	Smudge Tool	ابزار پخش رنگ
++	Snap	چسبیدن خودکار
++	Snap To	چسبیدن به
++	Snap to Grid	چسبیدن به شبکه
++	Snap to Origin	چسبیدن به مبدأ
++	Snap vector tools and transforms to pixel grid	ابزارهای برداری اسنپ و تبدیل به شبکه پیکسلی
++	Snapshot 1	عکس فوری 1
++	Snapshots	عکس های فوری
++	Snowflakes	دانه های برف
++	Soft	نرم
++	Soft dark	تیره نرم
++	Soft Dark Theme	تم تیره نرم
++	Soft light	نور نرم
++	Soft Light	نور ملایم
++	Soft Light Theme	تم نور ملایم
++	Soften	نرم کردن
++	Softness	نرمی
++	Software	نرم افزار
++	Software adapter	آداپتور نرم افزار
++	Solarize	خورشیدی کنید
++	Solarized dark	تاریک خورشیدی
++	Solarized Dark	تاریک خورشیدی
++	Solarized Dark Theme	تم تاریک خورشیدی
++	Solid	جامد
++	Solid Color	رنگ ثابت
++	Solid Color…	رنگ ثابت…
++	Solid Front Faces	صورت های جلوی جامد
++	Solidity:	پوشانندگی:
++	Some brush presets could not be loaded	برخی از تنظیمات از پیش تعیین شده برس بارگیری نشدند
++	Sort	مرتب کردن
++	Sort By Name	مرتب‌سازی بر اساس نام
++	Source	منبع
++	Source Channel	کانال منبع
++	Source Files	پرونده‌های مبدأ
++	Source Invert	منبع معکوس
++	Source Layer	لایه منبع
++	Source: not set ({key}-click with Clone Stamp)	منبع: تنظیم نشده است ({key}-با Clone Stamp کلیک کنید)
++	Source: set	منبع: مجموعه
++	Source1 Channel	منبع 1 کانال
++	Source1 Invert	منبع 1 معکوس
++	Source2 Channel	کانال منبع 2
++	Source2 Invert	منبع 2 معکوس
++	Space	فضا
++	Space After	فضای بعد
++	Space Before	فضا قبل
++	Spacing	فاصله‌گذاری
++	Spacing:	فاصله‌گذاری:
++	Sparkle	درخشش
++	Spatter	پاشیدن
++	Speckle	لکه
++	Speed	سرعت
++	Spell check complete.	بررسی املا کامل شد.
++	Spherize	کروی کردن
++	Spherize…	کروی کردن…
++	Spin	چرخش
++	Spin Blur	تاری چرخشی
++	Spin Blur…	تاری چرخشی…
++	Split at Playhead	تقسیم در Playhead
++	Split Channels	تقسیم کانال ها
++	Split Toning	اسپلیت تونینگ
++	Split Warp Crosswise	تار را به صورت ضربدری تقسیم کنید
++	Split Warp Horizontally	تار را به صورت افقی تقسیم کنید
++	Split Warp Vertically	تقسیم تار به صورت عمودی
++	Split:	تقسیم:
++	Sponge	اسفنج
++	Sponge Tool	ابزار اسفنج
++	Spot	نقطه
++	Spot Channel	کانال اسپات
++	Spot Color	رنگ نقطه ای
++	Spot Healing	درمان نقطه ای
++	Spot Healing Brush	برس لکه شفابخش
++	Spot Healing Brush Tool	قلم‌موی ترمیم نقطه‌ای
++	Spot:	نقطه:
++	Spray Radius	شعاع اسپری
++	Sprayed Strokes	حرکت‌های پاششی قلم‌مو
++	Spread	پخش کنید
++	Sprinkles	پاشیده می‌شود
++	Square	مربع
++	Square Size	اندازه مربع
++	Square, 12 x 12	مربع، ۱۲×۱۲
++	Square, 5 x 5	مربع، 5×5
++	Squareness	مربع بودن
++	Squeeze	فشار دهید
++	sRGB	sRGB
++	Srgb	Srgb
++	sRGB IEC61966-2.1	sRGB IEC61966-2.1
++	Stack Mode	حالت پشته
++	Stagger	تلو تلو خوردن
++	Stained Glass	ویترای
++	Stamp	تمبر
++	Stamp Down	تمبر پایین
++	Stamp Visible	تمبر قابل مشاهده
++	Standard	استاندارد
++	Standard Deviation	انحراف معیار
++	Standard Ligatures	لیگاتورهای استاندارد
++	Standard Screen Mode	حالت استاندارد صفحه نمایش
++	Star	ستاره
++	Star ratio	نسبت ستاره
++	Star Ratio:	نسبت ستاره:
++	Stars	ستاره ها
++	Start X	X را شروع کنید
++	Start Y	شروع Y
++	Starting serial	شروع سریال
++	Statistics	آمار
++	Statistics…	آمار…
++	Status Information	اطلاعات وضعیت
++	Std Dev:	انحراف معیار:
++	Step {step} ({id}) failed: {error}	مرحله {step} ({id}) ناموفق بود: {error}
++	Step {step} is waiting for its dialog	مرحله {step} منتظر گفتگوی خود است
++	Step Backward	گام به عقب
++	Step Forward	گام به جلو
++	Stippled	استیپل شده
++	Stop	توقف کنید
++	Stop For Errors	توقف برای خطاها
++	Stop playing/recording	پخش/ضبط را متوقف کنید
++	Stops	متوقف می‌شود
++	Straighten	صاف کردن
++	Straighten Layer	لایه را صاف کنید
++	Straighten the image by drawing a line on it	تصویر را با کشیدن یک خط روی آن صاف کنید
++	Strength	قدرت
++	Strength:	قدرت:
++	Stretch	کشش
++	Strikethrough	خط‌خورده
++	Stroke	خط دور
++	Stroke Catch-up	تکمیل حرکت قلم‌مو
++	Stroke color	رنگ خط دور
++	Stroke Color	رنگ خط دور
++	Stroke Detail	جزئیات حرکت قلم‌مو
++	Stroke Direction	جهت حرکت قلم‌مو
++	Stroke Length	طول حرکت قلم‌مو
++	Stroke Options	گزینه‌های خط دور
++	Stroke Path	رسم روی مسیر
++	Stroke path with brush	رسم روی مسیر با قلم‌مو
++	Stroke Path…	رسم روی مسیر…
++	Stroke Pressure	فشار قلم‌مو
++	Stroke Size	اندازهٔ حرکت قلم‌مو
++	Stroke Width	ضخامت خط دور
++	Stroke:	خط دور:
++	Stroke…	خط دور…
++	Strokes	حرکت‌های قلم‌مو
++	Strokes to remove: {n} (Enter applies, Esc cancels)	حرکت‌های قلم‌مو برای حذف: {n}؛ Enter تأیید، Esc انصراف
++	Strong	قوی
++	Structure:	ساختار:
++	Studio	استودیو
++	Studio (Dark)	استودیو (تاریک)
++	Studio (Light)	استودیو (نور)
++	Studio light	نور استودیو
++	Studio Light	استودیو نور
++	Studio Light Theme	تم نور استودیو
++	Studio Theme	تم استودیو
++	Style	سبک
++	Style {name} saved	سبک {name} ذخیره شد
++	Style Options	گزینه های سبک
++	Style Options…	گزینه های سبک…
++	Style: Normal	سبک: معمولی
++	Styles	سبک‌ها
++	Stylistic Alternates	جایگزین های سبک
++	Stylization	سبک سازی
++	Stylize	تلطیف کنید
++	Stylus Wheel	چرخ قلم
++	Subdivisions	تقسیمات فرعی
++	Subject	سوژه
++	Subject Distance	فاصله موضوع
++	Subscript	اشتراک
++	Subtract	تفریق
++	Subtract from	کم کردن از
++	Subtract from Sample	از نمونه کم کنید
++	Subtract from selection  ({key})	تفریق از انتخاب ({key})
++	Subtract from selection  (⌥)	کسر از انتخاب (⌥)
++	Subtract Front Shape	شکل جلو را کم کنید
++	Subtract Mask from Selection	ماسک را از انتخاب کم کنید
++	Subtract Shapes at Overlap	کم کردن اشکال در همپوشانی
++	Suggestions:	پیشنهادات:
++	Sumi-e	سومی ای
++	Summarize…	خلاصه کردن…
++	Summation	جمع بندی
++	Superscript	بالانویس
++	Supplemental Categories	دسته بندی های تکمیلی
++	Surface Blur	تاری سطح
++	Surface Blur…	تاری سطح…
++	Swap colours (X)	تعویض رنگ (X)
++	Swaps height and width	ارتفاع و عرض را تعویض می‌کند
++	Swash	سواش
++	Swatches	نمونه‌رنگ‌ها
++	Switch between free transform and warp modes	جابجایی بین حالت تبدیل آزاد و تاب
++	Switch Foreground and Background Colors	رنگ های پیش زمینه و پس زمینه را تغییر دهید
++	Switch theme	تغییر تم
++	Switched to CPU rendering	به رندر CPU تغییر وضعیت داد
++	Symbols	نمادها
++	Symmetry Off	تقارن خاموش
++	Sync with system	همگام سازی با سیستم
++	System	سیستم
++	System Default	پیش‌فرض سیستم
++	System Info	اطلاعات سیستم
++	System Info…	اطلاعات سیستم…
++	System title bar	نوار عنوان سیستم
++	Table	جدول
++	Tablet	تبلت
++	Tabloid	تبلوید
++	Take the shortcut from the other command and select it	میانبر را از دستور دیگر بگیرید و آن را انتخاب کنید
++	Taper	مخروطی
++	Targa Options	گزینه های تارگا
++	Target	هدف
++	Target Channel 3	کانال 3 را هدف بگیرید
++	Target Channel 4	کانال 4 را هدف بگیرید
++	Target Channel 5	کانال 5 را هدف بگیرید
++	Target Channel 6	کانال 6 را هدف بگیرید
++	Target Channel 7	کانال 7 را هدف بگیرید
++	Target Channel 8	کانال 8 را هدف بگیرید
++	Target Channel 9	کانال 9 را هدف بگیرید
++	Target Composite Channel	کانال ترکیبی هدف
++	Target Path	مسیر هدف
++	Target X	هدف X
++	Target Y	هدف Y
++	Target:	هدف:
++	Teal Orange	نارنجی سبز
++	Technique	تکنیک
++	Technology Previews	پیش‌نمایش های فناوری
++	Technology Previews…	پیش‌نمایش فناوری…
++	Temperature	دمای رنگ
++	Temporary	موقت
++	Tetrahedral	چهار وجهی
++	Text color	رنگ متن
++	Text engine	موتور متن
++	Text file	فایل متنی
++	Text Layer	لایه متن
++	Text Position:	موقعیت متن:
++	Text Replacement	جایگزینی متن
++	Texture	بافت
++	Texture Coverage	پوشش بافت
++	Texture Each Tip	بافت هر نکته
++	Texturizer	بافت ساز
++	Thaw Mask	ماسک برفک
++	The canvas is shown as sRGB. Choose a monitor profile in Edit › Color Settings.	بوم به صورت sRGB نشان داده می‌شود. یک نمایه مانیتور را در ویرایش › تنظیمات رنگ انتخاب کنید.
++	The canvas on {display} is shown as sRGB. Choose a monitor profile in Edit › Color Settings.	بوم روی {display} به صورت sRGB نشان داده می‌شود. یک نمایه مانیتور را در ویرایش › تنظیمات رنگ انتخاب کنید.
++	The current gradient (pick one in Window › Gradients)	گرادیان فعلی (یکی را در پنجره › گرادیان ها انتخاب کنید)
++	The document “{name}” does not have an embedded {mode} profile.	سند "{name}" نمایه {mode} تعبیه شده ندارد.
++	The document “{name}” has an embedded color profile that does not match the current {mode} working space.	سند "{name}" دارای یک نمایه رنگی جاسازی شده است که با فضای کاری فعلی {mode} مطابقت ندارد.
++	The document does not have an embedded colour profile. Working space: {working}.	سند نمایه رنگی تعبیه شده ندارد. فضای کار: {working}.
++	The document has an embedded colour profile that does not match the working space.\nEmbedded: {embedded}\nWorking: {working}	سند دارای یک نمایه رنگی جاسازی شده است که با فضای کاری مطابقت ندارد.\nجاسازی شده: {embedded}\nدر حال کار: {working}
++	The document is closed	سند بسته است
++	The document or selected layers changed. Please request deletion again.	سند یا لایه های انتخابی تغییر کرد. لطفاً دوباره درخواست حذف کنید.
++	The file could not be opened.	فایل باز نشد.
++	The file could not be saved.	فایل ذخیره نشد.
++	The GPU compositor wasn't used: {reason}	ترکیبگر GPU استفاده نشده است: {reason}
++	The gradient the Gradient tool paints with	گرادیانی که ابزار Gradient با آن رنگ می‌کند
++	The keyboard shortcut set was not imported: {error}	مجموعه میانبر صفحه کلید وارد نشد: {error}
++	The layer or its mask changed. Drag the mask onto the Trash again.	لایه یا ماسک آن تغییر کرد. ماسک را دوباره روی سطل زباله بکشید.
++	The layers need {needed} of GPU memory and may hold {budget}, so edits that redraw the whole document do it on the CPU. Click to set GPU Memory.	لایه‌ها به {needed} حافظه GPU نیاز دارند و ممکن است {budget} را نگه دارند، بنابراین ویرایش‌هایی که کل سند را دوباره ترسیم می‌کنند این کار را در CPU انجام می‌دهند. برای تنظیم حافظه GPU کلیک کنید.
++	The transform couldn't be applied.	تبدیل را نمی توان اعمال کرد.
++	Theme	تم
++	There are too many sets: delete one first.	مجموعه های زیادی وجود دارد: ابتدا یکی را حذف کنید.
++	There is no crop size or ratio to save	هیچ اندازه یا نسبتی برای ذخیره وجود ندارد
++	These settings aren't available in PhotoCraft yet.	این تنظیمات هنوز در PhotoCraft در دسترس نیستند.
++	Thickness	ضخامت
++	Thin	نازک
++	This adjustment ({key}) is kept as imported and can't be edited yet.	این تنظیم ({key}) به عنوان وارد شده نگهداری می‌شود و هنوز قابل ویرایش نیست.
++	This document's layers need {needed} but may hold {budget}: whole-document redraws use the CPU	لایه‌های این سند به {needed} نیاز دارند، اما ممکن است {budget} را نگه دارند: ترسیم مجدد کل سند از CPU استفاده می‌کند
++	This document's layers: {needed} of {budget} for layers	لایه‌های این سند: {needed} از {budget} برای لایه‌ها
++	This fill layer must be rasterized before proceeding. Its fill content will no longer be editable. Rasterize the layer?	قبل از ادامه، این لایه پر باید شطرنجی شود. محتوای پر آن دیگر قابل ویرایش نخواهد بود. لایه را شطرنجی کنید؟
++	This layer must be rasterized before proceeding.	قبل از ادامه این لایه باید شطرنجی شود.
++	This Layer:	این لایه:
++	This redraw took {seconds} s on the CPU.	این ترسیم مجدد در CPU {seconds} ثانیه طول کشید.
++	This session: {reason}	این جلسه: {reason}
++	This shape layer must be rasterized before proceeding. It will no longer be editable as a shape. Rasterize the shape?	این لایه شکل باید قبل از ادامه شطرنجی شود. دیگر به عنوان شکل قابل ویرایش نخواهد بود. شکل را شطرنجی کنید؟
++	This Smart Object must be rasterized before proceeding. Its contents will no longer be editable. Rasterize the Smart Object?	قبل از ادامه، این شی هوشمند باید شطرنجی شود. محتویات آن دیگر قابل ویرایش نخواهد بود. شئ هوشمند را شطرنجی کنید؟
++	This type layer must be rasterized before proceeding. Its text will no longer be editable. Rasterize the type?	این نوع لایه قبل از ادامه باید شطرنجی شود. متن آن دیگر قابل ویرایش نخواهد بود. شطرنجی کردن نوع؟
++	Threshold	آستانه
++	Threshold Level	سطح آستانه
++	Threshold…	آستانه…
++	Thumbnail size (smallest: list)	اندازه تصویر کوچک (کوچکترین: فهرست)
++	TIFF Options	گزینه های TIFF
++	Tile	کاشی
++	Tile All Horizontally	کاشی تمام افقی
++	Tile All Vertically	کاشی همه به صورت عمودی
++	Tile Size	اندازه کاشی
++	Tiles	کاشی
++	Tiles…	کاشی…
++	Tilt	کج کردن
++	Tilt Scale	مقیاس شیب
++	Tilt X	شیب X
++	Tilt Y	شیب Y
++	Tilt-Shift	تاری تیلت‌شیفت
++	Tilt-Shift…	تاری تیلت‌شیفت…
++	Time	زمان
++	Timecode	کد زمان
++	Timeline	جدول زمانی
++	Timing	زمان بندی
++	Tint	ته‌رنگ
++	Tint Color	رنگ رنگ
++	Tiny	کوچک
++	Tiny Lens	لنز کوچک
++	Title	عنوان
++	Titling Alternates	عنوان جایگزین
++	To	به
++	To Center	به مرکز
++	To drop files, start PhotoCraft under XWayland: `{command}`	برای رها کردن فایل‌ها، PhotoCraft را در XWayland راه‌اندازی کنید: «{command}».
++	Toggle count group visibility	تغییر وضعیت مشاهده گروه
++	Toggle Last State	تغییر به وضعیت قبلی
++	Toggle Layer Mask Overlay	روکش ماسک لایه را تغییر دهید
++	Toggle reference point	تغییر نقطه مرجع
++	Toggle text orientation	جهت متن را تغییر دهید
++	Toggle the Brush Settings panel	پانل تنظیمات قلم‌مو را تغییر دهید
++	Toggle the Brush Settings panel  (F5)	پانل تنظیمات قلم‌مو (F5) را تغییر دهید
++	Toggle visibility	قابلیت مشاهده را تغییر دهید
++	Tolerance	رواداری
++	Tolerance:	رواداری:
++	Tone Curve	منحنی تن
++	Tone Histogram	هیستوگرام تن
++	Tone:	لحن:
++	Tool	ابزار
++	Tool Options	گزینه های ابزار
++	Tool Presets	تنظیمات از پیش تعیین شده ابزار
++	Toolbar	نوار ابزار
++	Toolbar…	نوار ابزار…
++	Toolbars	نوار ابزار
++	Tools	ابزارها
++	Tools…	ابزارها…
++	Top	بالا
++	Top Edges	لبه های بالا
++	Top Left	بالا چپ
++	Top Right	بالا راست
++	Top:	بالا:
++	Torn Edges	لبه های پاره شده
++	Total Ink	جوهر کل
++	Total:	مجموع:
++	Touch gestures	حرکات لمسی
++	Trace Contour	کانتور ردیابی
++	Trace Contour…	ردیابی کانتور…
++	Tracking	ردیابی
++	Tracking (1/1000 em)	ردیابی (1/1000 em)
++	Traditional (72.27 points/inch)	سنتی (72.27 امتیاز/اینچ)
++	Transfer	انتقال
++	Transform	تبدیل
++	Transform Again on a Copy	دوباره روی یک کپی تغییر شکل دهید
++	Transform On Drop	تبدیل در قطره
++	Transform Selection	تبدیل انتخاب
++	Transform Symmetry	تبدیل تقارن
++	Transformation	دگرگونی
++	Transition	انتقال
++	Transmission Reference	مرجع انتقال
++	Transparency	شفافیت
++	Transparency & Gamut	شفافیت و گستره
++	Transparency & Gamut…	شفافیت و گسترهٔ رنگ…
++	Transparency Shapes Layer	لایه شکل های شفافیت
++	Transparency Threshold	آستانه شفافیت
++	Transparent	شفاف
++	Trap	دام
++	Trap…	تله…
++	Tree	درخت
++	Tree…	درخت…
++	Triangle	مثلث
++	Triangle Tool	ابزار مثلث
++	Trilinear	سه خطی
++	Trim	حذف حاشیه
++	Trim…	حذف حاشیه…
++	Turbulent	متلاطم
++	Turn the prompt back on with Ask On Mismatch in Edit › Color Settings.	با Ask On Mismatch در ویرایش › تنظیمات رنگ، درخواست را دوباره روشن کنید.
++	Twirl	چرخش
++	Twirl Clockwise	در جهت عقربه های ساعت بچرخانید
++	Twirl Counterclockwise	خلاف جهت عقربه های ساعت بچرخانید
++	Twirl…	چرخش…
++	Twist	پیچ و تاب
++	Type	متن
++	Type Layer	لایه را تایپ کنید
++	Type Options	گزینه ها را تایپ کنید
++	Type Styles	سبک های تایپ
++	Type units	واحدها را تایپ کنید
++	Type:	متن:
++	Type…	متن…
++	UI font size	اندازهٔ قلم رابط
++	UI scale	مقیاس رابط
++	Ultra Bold	فوق العاده پررنگ
++	Ultra Light	فوق العاده سبک
++	Unaltered	بدون تغییر
++	Unavailable in this color mode	در این حالت رنگی موجود نیست
++	Uncoated CMYK	CMYK بدون پوشش
++	Undefined Areas	مناطق تعریف نشده
++	Underline	زیر خط بکشید
++	Underlying Layer:	لایه زیرین:
++	Underpainting	زیر نقاشی کردن
++	Underwater	زیر آب
++	Undo	واگرد
++	Undo Changes	لغو تغییرات
++	Ungroup	لغو گروه کردن
++	Ungroup Layers	باز کردن گروه لایه‌ها
++	Uniform	یکنواخت
++	Unite Shapes	شکل ها را متحد کنید
++	Unite Shapes at Overlap	متحد کردن اشکال در همپوشانی
++	Units	واحدها
++	Units & Rulers	واحدها و خط‌کش‌ها
++	Units & Rulers…	واحدها و خط‌کش‌ها…
++	Unix	یونیکس
++	unknown	ناشناخته
++	Unknown	ناشناس
++	unknown type	نوع ناشناخته
++	Unlink	لغو پیوند
++	Unlink Layer Mask	قطع پیوند ماسک لایه
++	Unlink the mask from the layer	ماسک را از لایه جدا کنید
++	Unlock	باز کردن قفل
++	Unlock: picking a preset replaces these settings	باز کردن قفل: انتخاب یک پیش تنظیم جایگزین این تنظیمات می‌شود
++	Unlocked	قفل باز شد
++	Unnamed {mode} profile	نمایه {mode} بدون نام
++	Unsaved changes	تغییرات ذخیره‌نشده
++	Unsaved Changes	تغییرات ذخیره نشده
++	Unsharp Mask	ماسک بدون تیز
++	Unsharp Mask…	ماسک بدون تیز…
++	Unsupported file format	فرمت فایل پشتیبانی نشده
++	Unsupported format	قالب پشتیبانی نشده
++	Untagged {mode}	بدون برچسب {mode}
++	Untitled	بدون عنوان
++	Untitled-1	بدون عنوان-1
++	Up	بالا
++	Update	به روز رسانی
++	Update All Modified Content	تمام محتوای اصلاح شده را به روز کنید
++	Update All Text Layers	به روز رسانی تمام لایه های متن
++	Update Layer Comp	به‌روزرسانی ترکیب لایه‌ها
++	Update layer comp (visibility, position and appearance)	به روز رسانی لایه کامپ (قابلیت مشاهده، موقعیت و ظاهر)
++	Update Modified Content	به روز رسانی محتوای اصلاح شده
++	Update the current brush with these settings	با این تنظیمات قلم‌مو فعلی را به روز کنید
++	Updated {n} linked smart object changed on disk	{n} شیء هوشمند پیوندیِ تغییرکرده روی دیسک به‌روز شد
++	Updates	به روز رسانی ها
++	Upper	بالا
++	Urgency	فوریت
++	URLs	URL ها
++	Use additional plugins folder	از پوشه افزونه های اضافی استفاده کنید
++	Use Classic Mode	از حالت کلاسیک استفاده کنید
++	Use Custom Color	از رنگ سفارشی استفاده کنید
++	Use Default	از پیش فرض استفاده کنید
++	Use esc to commit	از esc برای commit استفاده کنید
++	Use File › Open to open an image.	از File › Open برای باز کردن یک تصویر استفاده کنید.
++	Use File › Open, or paste a copied image with {paste}.	از File › باز کنید، یا یک تصویر کپی شده را با {paste} جایگذاری کنید.
++	Use finite lengths and a positive pattern total	از طول های محدود و کل الگوی مثبت استفاده کنید
++	Use Global Light	از نور جهانی استفاده کنید
++	Use gpu	از gpu استفاده کنید
++	Use Legacy	از Legacy استفاده کنید
++	Use legacy free transform	از تبدیل رایگان قدیمی استفاده کنید
++	Use Measurement Scale	از مقیاس اندازه گیری استفاده کنید
++	Use Previous Layer to Create Clipping Mask	از لایه قبلی برای ایجاد Clipping Mask استفاده کنید
++	Use Selection In Source	از Selection در منبع استفاده کنید
++	Use Selection In Target	از Selection در Target استفاده کنید
++	Use shift key for tool switch	از کلید shift برای سوئیچ ابزار استفاده کنید
++	Use tablet pressure	از فشار تبلت استفاده کنید
++	Use tablet pressure to change pen width	برای تغییر عرض قلم از فشار تبلت استفاده کنید
++	Use the embedded profile ({profile})	استفاده از نمایه تعبیه شده ({profile})
++	Use:	استفاده از:
++	Username	نام کاربری
++	Uses the foreground and background colors.	از رنگ های پیش زمینه و پس زمینه استفاده می‌کند.
++	Uses the foreground and background colours.	از رنگ های پیش زمینه و پس زمینه استفاده می‌کند.
++	Vanishing Point	نقطه ناپدید شدن
++	Vanishing Point is not active	Vanishing Point فعال نیست
++	Vanishing Point: click four corners to create a plane	نقطه ناپدید شدن: برای ایجاد یک صفحه روی چهار گوشه کلیک کنید
++	Vanishing Point…	نقطه ناپدید شدن…
++	Variable Data Sets	مجموعه داده های متغیر
++	Variable Data Sets…	مجموعه داده های متغیر…
++	Variables	متغیرها
++	Variables bind a layer's visibility, text or pixels to a named data slot.	متغیرها دید یک لایه، متن یا پیکسل ها را به یک اسلات داده نامگذاری شده متصل می کنند.
++	Variance	واریانس
++	Vary round brush hardness on hud	سختی برس گرد را روی hud تغییر دهید
++	vector mask	ماسک برداری
++	Vector Mask	ماسک برداری
++	Vector Mask from Current Path	وکتور ماسک از مسیر فعلی
++	Vector Mask Hides Effects	وکتور ماسک جلوه ها را پنهان می‌کند
++	Version	نسخه
++	Version {version}	نسخه {version}
++	Vertical	عمودی
++	Vertical Centers	مراکز عمودی
++	Vertical Distortion	اعوجاج عمودی
++	Vertical Only	فقط عمودی
++	Vertical scale	مقیاس عمودی
++	Vertical type	نوع عمودی
++	Vertical Type Mask Tool	ابزار ماسک نوع عمودی
++	Vertical Type Tool	ابزار نوع عمودی
++	Vertically	به صورت عمودی
++	Very High	بسیار بالا
++	Vibrance	شادابی رنگ
++	Vibrance…	شادابی رنگ…
++	Video	ویدیو
++	Video Cache	حافظهٔ نهان ویدیو
++	Video Frames to Layers	فریم های ویدیویی به لایه ها
++	Video Frames to Layers…	فریم های ویدیویی به لایه ها…
++	Video Layers	لایه های ویدیویی
++	View	نمایش
++	View menu	مشاهده منو
++	View Options	مشاهده گزینه ها
++	Vignette Amount	مقدار وینیت
++	Vignette Feather	پر وینیت
++	Vignette Highlights	عکس های برجسته
++	Vignette Midpoint	نقطه میانی وینیت
++	Vignette Roundness	گرد بودن وینیت
++	Vignette Style	سبک وینیت
++	Vignetting	ویژنتینگ
++	Vine Color	رنگ انگور
++	Vine With Flowers	تاک با گل
++	Vine With Leaves	تاک با برگ
++	Violent	خشونت آمیز
++	violet	بنفش
++	Violet	بنفش
++	Violet, Orange	بنفش، نارنجی
++	Visibility	دید
++	Visible	قابل مشاهده است
++	Vivid Light	نور زنده
++	Vulkan	ولکان
++	W	دبلیو
++	W x H x Resolution	W x H x وضوح
++	W:	W:
++	Wand	چوبدستی
++	Warm	گرم
++	Warming Filter (85)	فیلتر گرمایش (85)
++	Warming L B A	گرم کردن L B A
++	Warming81	گرم شدن 81
++	Warming85	گرم شدن 85
++	Warmth	گرما
++	Warning	هشدار
++	Warp	تغییر شکل
++	Warp Text	تغییر شکل متن
++	Warp Text…	تغییر شکل متن…
++	Warp:	تغییر شکل:
++	Water Paper	کاغذ آب
++	Watercolor	آبرنگ
++	Watercolour look: lighter interior, darker rims.	ظاهر آبرنگ: فضای داخلی روشن تر، لبه های تیره تر.
++	Wave	موج
++	Wave…	موج…
++	Wavelength Max	حداکثر طول موج
++	Wavelength Min	حداقل طول موج
++	Waves	امواج
++	Web	وب
++	Web Color	رنگ وب
++	Web Large	وب بزرگ
++	Web Minimum	حداقل وب
++	Web Most Common	وب رایج ترین
++	Web Photo Gallery…	گالری عکس وب …
++	Web Snap	وب اسنپ
++	Webp	Webp
++	WebP (lossless)	WebP (بدون ضرر)
++	Weight	وزن
++	Weight:	وزن:
++	Wet	خیس
++	Wet Edges	لبه های مرطوب
++	Wetness	خیسی
++	Wetness Jitter	نوسان خیسی
++	White	سفید
++	White Balance: As Shot	تراز سفیدی: به عنوان شات
++	White Clip	گیره سفید
++	White Intensity	شدت سفید
++	White Is High	سفید بالاست
++	White Matte	مات سفید
++	Whites	سفیدها
++	Whole Word	کل کلمه
++	WIA Support	پشتیبانی WIA
++	WIA Support…	پشتیبانی WIA…
++	Wide Blurry	تاری گسترده
++	Wide Gamut RGB	گستره وسیع RGB
++	Wide Sharp	شارپ عریض
++	Width	عرض
++	Width and Height	عرض و ارتفاع
++	Width:	عرض:
++	Wind	باد
++	Wind…	باد…
++	Window	پنجره
++	Window renderer: {renderer}	رندر پنجره: {renderer}
++	Windows	ویندوز
++	Windows LCD	ال سی دی ویندوز
++	Word Spacing	فاصله بین کلمات
++	Work Path	مسیر کاری
++	Working	در حال کار کردن
++	Working Black Plate	صفحه سیاه کار
++	Working CMY Plate	صفحه کار CMY
++	Working Cmyk	Cmyk در حال کار
++	Working CMYK	CMYK کار می‌کند
++	Working Cyan Plate	صفحه فیروزه ای کار
++	Working Gray	خاکستری کار
++	Working Gray Plate	صفحه خاکستری کار
++	Working Magenta Plate	صفحه سرخابی کار
++	Working Rgb	Rgb کار
++	Working Space	فضای کار
++	Working Spaces	فضاهای کاری
++	Working Yellow Plate	صفحه زرد کار
++	Working-cmyk	کار-cmyk
++	Working: {working}	کار: {working}
++	Working…	در حال کار…
++	Workspace	فضای کاری
++	Workspace…	فضای کاری…
++	Workspaces	فضاهای کاری
++	World ready	جهان آماده است
++	Wrap	بسته بندی کنید
++	X	X
++	X11	X11
++	XOR	XOR
++	Y	Y
++	yellow	زرد
++	Yellow	زرد
++	Yellow  ·  Blue	زرد · آبی
++	Yellows	زردها
++	Yes	بله
++	Your keyboard shortcut set {set} is in use here: {n} shortcuts differ from the defaults. Edit › Keyboard Shortcuts shows them; Reset All to Defaults undoes this.	مجموعه میانبر صفحه کلید شما {set} در اینجا استفاده می‌شود: میانبرهای {n} با پیش فرض ها متفاوت هستند. ویرایش › میانبرهای صفحه کلید آنها را نشان می دهد. بازنشانی همه به پیش‌فرض این کار را لغو می‌کند.
++	Zigzag	زیگزاگ
++	ZigZag	زیگ زاگ
++	ZigZag…	زیگ زاگ…
++	Zoom	بزرگ‌نمایی
++	Zoom clicked point to center	زوم نقطه به مرکز کلیک کرد
++	Zoom in	بزرگنمایی کنید
++	Zoom In	بزرگ‌نمایی
++	Zoom In (hold, drag to scrub)	بزرگنمایی (نگه دارید، بکشید تا تمیز شود)
++	Zoom out	بزرگنمایی کنید
++	Zoom Out	کوچک‌نمایی
++	Zoom Out (hold)	بزرگنمایی (نگه دارید)
++	Zoom resizes windows	بزرگنمایی اندازه پنجره ها را تغییر می دهد
++	Zoom Tool	ابزار بزرگ‌نمایی
++	Zoom with scroll wheel	زوم با چرخ اسکرول
++	Zoom with trackpad pinch	زوم با چسباندن پد ترک
++@plural	{n} action|{n} actions	{n} عملیات
++@plural	{n} item|{n} items	{n} مورد
++@plural	{n} layer recorded by this comp was deleted. Update the comp, or clear the warning.|{n} layers recorded by this comp were deleted. Update the comp, or clear the warning.	{n} لایهٔ ثبت‌شده در این ترکیب حذف شده است. ترکیب را به‌روز کنید یا هشدار را پاک کنید.
++@plural	{n} layer|{n} layers	{n} لایه
++@plural	{n} Layer|{n} Layers	{n} لایه
++@plural	{n} plane|{n} planes	{n} صفحه
++@plural	{n} preset|{n} presets	{n} پیش‌تنظیم
++@plural	{n} sample point removed|{n} sample points removed	{n} نقطهٔ نمونه‌برداری حذف شد
++@plural	{n} sample|{n} samples	{n} نمونه
++@plural	{n} slice|{n} slices	{n} قطعه
++@plural	{n} step has no PhotoCraft equivalent yet|{n} steps have no PhotoCraft equivalent yet	{n} مرحله هنوز در PhotoCraft معادل ندارد
++@plural	{n} step with no Photoshop equivalent left out|{n} steps with no Photoshop equivalent left out	{n} مرحلهٔ بدون معادل در Photoshop کنار گذاشته شد
++@plural	{n} step|{n} steps	{n} مرحله
++@plural	{warning} (+{n} more brush preset warning)|{warning} (+{n} more brush preset warnings)	{warning} (به‌علاوهٔ {n} هشدار دیگر برای پیش‌تنظیم قلم‌مو)
++@plural	{what} with {n} warning|{what} with {n} warnings	{what} با {n} هشدار
++@plural	Exported {n} swatch to {file}|Exported {n} swatches to {file}	{n} نمونه‌رنگ در {file} خروجی گرفته شد
++@plural	Group · {n} layer|Group · {n} layers	گروه · {n} لایه
++@plural	Imported {n} brush from {file}|Imported {n} brushes from {file}	{n} قلم‌مو از {file} وارد شد
++@plural	Imported {n} brush from {group}|Imported {n} brushes from {group}	{n} قلم‌مو از {group} وارد شد
++@plural	Imported {n} gradient from {file}|Imported {n} gradients from {file}	{n} طیف رنگ از {file} وارد شد
++@plural	Imported {n} pattern from {file}|Imported {n} patterns from {file}	{n} الگو از {file} وارد شد
++@plural	Imported {n} swatch from {file}|Imported {n} swatches from {file}	{n} نمونه‌رنگ از {file} وارد شد
++@plural	Loaded {n} action from {file}|Loaded {n} actions from {file}	{n} عملیات از {file} بارگذاری شد
++@plural	Played {n} step|Played {n} steps	{n} مرحله اجرا شد
++@plural	Saved {n} action to {file}|Saved {n} actions to {file}	{n} عملیات در {file} ذخیره شد
++@plural	Saved for Web: {n} file|Saved for Web: {n} files	ذخیره برای وب: {n} پرونده
++@plural	Updated {n} linked smart object changed on disk|Updated {n} linked smart objects changed on disk	{n} شیء هوشمند پیوندیِ تغییرکرده روی دیسک به‌روز شد
++cameraData	Date Taken	تاریخ گرفته شده
++cameraData	Exposure	نوردهی
++cameraData	F-Stop	F-Stop
++cameraData	Focal Length	فاصله کانونی
++cameraData	Focal Length (35 mm)	فاصله کانونی (35 میلی متر)
++cameraData	ISO Speed	سرعت ISO
++cameraData	Lens	لنز
++cameraData	Make	بسازید
++cameraData	Model	مدل
++cameraRaw	Amount	مقدار
++cameraRaw	Aqua	آبی
++cameraRaw	Balance	تعادل
++cameraRaw	Blacks	سیاه‌ها
++cameraRaw	Blending	مخلوط کردن
++cameraRaw	Blue	آبی
++cameraRaw	Clarity	وضوح موضعی
++cameraRaw	Color	رنگ
++cameraRaw	Color Detail	جزئیات رنگ
++cameraRaw	Color Grading	درجه بندی رنگ
++cameraRaw	Color Mixer	میکسر رنگ
++cameraRaw	Contrast	کنتراست
++cameraRaw	Curve	منحنی
++cameraRaw	Darks	تون‌های تیره
++cameraRaw	Dehaze	مه‌زدایی
++cameraRaw	Detail	جزئیات
++cameraRaw	Effects	جلوه ها
++cameraRaw	Exposure	نوردهی
++cameraRaw	Feather	نرمی لبه
++cameraRaw	Global	جهانی
++cameraRaw	Green	سبز
++cameraRaw	Highlights	بخش‌های روشن
++cameraRaw	Hue	فام
++cameraRaw	Light	نور
++cameraRaw	Lights	تون‌های روشن
++cameraRaw	Luminance	درخشندگی
++cameraRaw	Luminance Detail	جزئیات درخشندگی
++cameraRaw	Magenta	سرخابی
++cameraRaw	Masking	ماسک‌گذاری
++cameraRaw	Midpoint	نقطه میانی
++cameraRaw	Midtones	تون‌های میانی
++cameraRaw	Orange	نارنجی
++cameraRaw	Purple	بنفش
++cameraRaw	Radius	شعاع
++cameraRaw	Red	قرمز
++cameraRaw	Roughness	زبری
++cameraRaw	Roundness	گردی
++cameraRaw	Saturation	اشباع
++cameraRaw	Shadows	سایه‌ها
++cameraRaw	Size	اندازه
++cameraRaw	Temperature	دمای رنگ
++cameraRaw	Texture	بافت
++cameraRaw	Tint	ته‌رنگ
++cameraRaw	Vibrance	شادابی رنگ
++cameraRaw	Whites	سفیدها
++cameraRaw	Yellow	زرد
++colorRange	Invert	معکوس کردن
++curves	Smooth	صاف
++document	Orientation	جهت گیری
++fontWeight	Black	بسیار ضخیم
++fontWeight	Bold	ضخیم
++fontWeight	ExtraBold	فوق‌ضخیم
++fontWeight	ExtraLight	فوق‌نازک
++fontWeight	Italic	مورب
++fontWeight	Light	نازک
++fontWeight	Medium	متوسط
++fontWeight	Regular	معمولی
++fontWeight	SemiBold	نیمه‌ضخیم
++fontWeight	Thin	بسیار نازک
++layerLabel	Magenta	سرخابی
++layerLabel	No Color	بدون رنگ
++layerLabel	Red	قرمز
++layers	Fill	پرشدگی
++layers	Fill:	پرشدگی:
++navigator	Zoom	بزرگ‌نمایی
++shape	Appearance	ظاهر
+diff --git a/crates/ui-egui/src/i18n/mod.rs b/crates/ui-egui/src/i18n/mod.rs
+index c7a0d57..daf2493 100644
+--- a/crates/ui-egui/src/i18n/mod.rs
++++ b/crates/ui-egui/src/i18n/mod.rs
+@@ -187,8 +187,10 @@ fn expand(packed: &str, keys: &[&str]) -> Result<String, String> {
+ }
+ 
+ /// The registry. English first: it is the fallback and the source language.
+-pub static LANGUAGES: [LangInfo; 21] = [
++pub static LANGUAGES: [LangInfo; 22] = [
+     LangInfo { code: "en", name: "English", source: b"", plural: plural_one_other, complete_menus: false, catalog: OnceLock::new() },
++    // Persian uses an uninflected noun after an integer count ("3 لایه").
++    LangInfo { code: "fa", name: "فارسی", source: catalog!("fa"), plural: plural_none, complete_menus: true, catalog: OnceLock::new() },
+     LangInfo { code: "ja", name: "日本語", source: catalog!("ja"), plural: plural_none, complete_menus: true, catalog: OnceLock::new() },
+     LangInfo { code: "zh-hans", name: "简体中文", source: catalog!("zh-hans"), plural: plural_none, complete_menus: true, catalog: OnceLock::new() },
+     // Traditional Chinese in the vocabulary used in Taiwan; `zh-TW`, `zh-HK`, `zh-MO` and `zh-Hant-*`
+@@ -392,7 +394,33 @@ pub fn has(lang: Lang, s: &str) -> bool {
+ 
+ /// Translate an English UI string into the current language ([`tr`] with [`current`]).
+ pub fn t(s: &str) -> &str {
+-    tr(current(), s)
++    display_text(tr(current(), s))
++}
++
++/// Cached display order for Persian UI labels. Catalogs and `tr` stay in logical order,
++/// so automation, native menus, search and editable text keep their original contents.
++/// egui shapes Arabic-script words but needs the existing bidi adapter to place those
++/// words around spaces and Latin runs. This cache is bounded by the bundled catalog.
++pub fn display_text(s: &str) -> &str {
++    if current().code() != "fa" {
++        return s;
++    }
++    static DISPLAY: OnceLock<std::collections::HashMap<String, String>> = OnceLock::new();
++    DISPLAY
++        .get_or_init(|| {
++            let Some(fa) = Lang::from_code("fa") else { return std::collections::HashMap::new() };
++            let mut map = std::collections::HashMap::new();
++            for (context, _, translation) in catalog::parse_entries(&fa.0.text()).0 {
++                let forms: Vec<&str> = if context == "@plural" { translation.split('|').collect() } else { vec![&translation] };
++                for form in forms {
++                    map.insert(form.to_owned(), crate::bidi_text::visual(form).into_owned());
++                }
++            }
++            map
++        })
++        .get(s)
++        .map(String::as_str)
++        .unwrap_or(s)
+ }
+ 
+ /// Translate an English UI string; unknown strings come back unchanged.
+@@ -431,6 +459,41 @@ mod tests {
+     use super::catalog::{parse_entries, placeholders};
+     use super::*;
+ 
++    #[test]
++    fn persian_resolves_regional_tags_and_uses_rtl() {
++        let fa = Lang::from_code("fa").expect("Persian registered");
++        assert_eq!(fa.name(), "فارسی");
++        assert_eq!(fa.dir(), Dir::Rtl);
++        for tag in ["fa", "FA", "fa-IR", "fa_IR.UTF-8", "fa-AF"] {
++            assert_eq!(lang_from_tag(tag), Some(fa), "{tag}");
++            assert_eq!(Lang::from_pref(tag), fa, "{tag}");
++        }
++        assert_eq!(tr(fa, "File"), "پرونده");
++        assert_eq!(tr(fa, "Layer"), "لایه");
++        assert_eq!(tr(fa, "Cancel"), "انصراف");
++        assert_eq!(tr(fa, "unknown translation"), "unknown translation");
++        assert_eq!(fmt(tr(fa, "Remove {name} from Recent"), &[("name", "sample.psd")]), "حذف sample.psd از فهرست اخیر");
++        for n in [0, 1, 2, 11, 100] {
++            assert_eq!(trn(fa, n, "{n} layer", "{n} layers"), format!("{n} لایه"));
++        }
++    }
++
++    #[test]
++    fn persian_display_order_does_not_modify_catalog_or_english() {
++        let fa = Lang::from_code("fa").expect("Persian registered");
++        let logical = tr(fa, "New Layer");
++        assert_eq!(logical, "لایهٔ جدید");
++        with_language(fa, || {
++            assert_eq!(t("New Layer"), crate::bidi_text::visual(logical));
++            assert_eq!(tr(fa, "New Layer"), logical);
++            let template = t("Remove {name} from Recent");
++            assert!(template.contains("{name}"), "display order must preserve placeholders");
++            assert!(fmt(template, &[("name", "photo.psd")]).contains("photo.psd"));
++            assert_eq!(t("unknown translation"), "unknown translation");
++        });
++        with_language(Lang::EN, || assert_eq!(t("New Layer"), "New Layer"));
++    }
++
+     const JA: fn() -> Lang = || Lang::from_code("ja").expect("ja registered");
+     const ZH: fn() -> Lang = || Lang::from_code("zh-hant").expect("zh-hant registered");
+     const CS: fn() -> Lang = || Lang::from_code("cs").expect("cs registered");
+diff --git a/crates/ui-egui/src/menu_keys.rs b/crates/ui-egui/src/menu_keys.rs
+index dee906c..e7df3ed 100644
+--- a/crates/ui-egui/src/menu_keys.rs
++++ b/crates/ui-egui/src/menu_keys.rs
+@@ -97,6 +97,7 @@ pub fn assign(labels: &[&str], preferred: &[Option<char>]) -> Vec<Option<char>>
+ /// `prefix + label` as menu text with the mnemonic's first occurrence in `label` underlined
+ /// (none when `mnemonic` is None). `color` is the text colour; None takes the widget's.
+ pub fn mnemonic_text(ui: &Ui, prefix: &str, label: &str, mnemonic: Option<char>, color: Option<Color32>) -> egui::WidgetText {
++    let label = crate::i18n::display_text(label);
+     let color = color.unwrap_or(Color32::PLACEHOLDER);
+     let font = egui::TextStyle::Button.resolve(ui.style());
+     let plain = egui::TextFormat { font_id: font.clone(), color, ..Default::default() };
+@@ -133,6 +134,7 @@ pub fn check_gutter(ui: &Ui) -> f32 {
+ /// with ✔ in the column when `checked`, and the mnemonic underlined when given (as
+ /// [`mnemonic_text`]).
+ pub fn menu_row_text(ui: &Ui, checked: bool, label: &str, mnemonic: Option<char>) -> egui::WidgetText {
++    let label = crate::i18n::display_text(label);
+     let font = egui::TextStyle::Button.resolve(ui.style());
+     let plain = egui::TextFormat { font_id: font, color: Color32::PLACEHOLDER, ..Default::default() };
+     let mut job = egui::text::LayoutJob::default();
+diff --git a/docs/localization-fa.md b/docs/localization-fa.md
+new file mode 100644
+index 0000000..4e2d965
+--- /dev/null
++++ b/docs/localization-fa.md
+@@ -0,0 +1,25 @@
++# Persian UI
++
++Persian localization by **محمد رضا فتحی پور** — [pcban.ir](https://pcban.ir).
++This credit is also displayed in Help > About PhotoCraft in the Persian distribution.
++
++Select **Edit > Preferences > Interface > Language > فارسی**. The language is saved as `fa`;
++`fa-IR`, `fa_IR.UTF-8` and `fa-AF` also resolve to it. Integer counts use the same noun form
++(for example `1 لایه` and `3 لایه`).
++
++The catalog translates the union of the existing public catalogs' plain and contextual keys.
++Common editing terminology was reviewed by OpenAI Codex; long-tail wording began as a Google
++Translate machine-assisted draft and still benefits from a native-speaker terminology review.
++No proprietary editor's localization resources were copied. Technical product names and user
++file names remain unchanged. Engine errors that have no localization call still appear in English,
++as they do with the other languages.
++
++The catalog stores normal logical-order Persian. The `tl!` display path and custom menu label
++renderer use the existing bidi adapter through a bounded catalog cache. `tr` remains logical
++for native menu models, search, and automation. The existing script font loader selects an
++installed Arabic-script font; Windows supplies suitable fonts. Shell layout follows `Dir::Rtl`.
++Panel interiors and editable-text caret behavior retain the upstream limitations.
++
++Tests cover regional locale resolution, direction, common terms, placeholder preservation,
++counts, and display order without altering the logical catalog. The regular catalog tests
++also check syntax, placeholders, duplicate entries, and enforced menu coverage.
+diff --git a/docs/localization.md b/docs/localization.md
+index 36e09f8..603e7c9 100644
+--- a/docs/localization.md
++++ b/docs/localization.md
+@@ -9,6 +9,7 @@ contextual, command-ID and plural translations; missing entries fall back to Eng
+ | Language | Preference code | Integer plural forms |
+ |---|---|---|
+ | English | `en` | one / other |
++| فارسی | `fa` | one uninflected form after integer counts |
+ | 简体中文 | `zh-hans` | one form |
+ | 日本語 | `ja` | one form |
+ | 한국어 | `ko` | one form |
+@@ -106,7 +107,10 @@ glyphs) and bidirectional word order: egui 0.36 shapes each right-to-left word w
+ so letters join, but lays a line's words out left to right, and its caret indexing is off in
+ right-to-left text (emilk/egui#8576, #8577). Document text is laid out by the text engine.
+ 
+-No right-to-left catalog ships yet. To check the mirrored layout with any language, launch with
++Persian (`fa`) ships a right-to-left catalog. Its `tl!` labels and custom menu labels use the
++existing bidi adapter through a bounded display cache; stored catalog strings remain in logical
++order. See [Persian UI](localization-fa.md) for coverage and the remaining panel/caret limits.
++To check the mirrored layout with any language, launch with
+ `PHOTOCRAFT_UI_DIRECTION=rtl` (or `ltr` to force left-to-right); it is read once per process
+ and has no effect on the web build:
+ 
